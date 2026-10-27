@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swannies Travels & Tours | Discover • Explore • Adventure</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #18143d;
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+        .font-handwriting {
+            font-family: 'Caveat', cursive;
+        }
+        .card-glow:hover {
+            box-shadow: 0 0 25px rgba(0, 191, 255, 0.3);
+            transform: translateY(-4px);
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-[#18143d] text-gray-100">
+
+    <!-- Top Info Bar -->
+    <div class="bg-[#120f30] text-xs py-2 px-4 border-b border-purple-900/50">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 text-center sm:text-left">
+            <div class="flex items-center gap-2 justify-center flex-wrap">
+                <span class="flex items-center gap-1.5 text-cyan-300"><i class="fa-solid fa-location-dot"></i> Centurion, Gauteng, SA</span>
+                <span class="hidden md:inline text-gray-500">|</span>
+                <span class="hidden md:flex items-center gap-1.5 text-gray-300"><i class="fa-solid fa-phone"></i> +27 (0) 12 000 SWAN</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-gray-400">Currency:</span>
+                <select id="currencySelector" onchange="changeCurrency(this.value)" class="bg-[#18143d] text-cyan-300 font-semibold px-2 py-1 rounded border border-cyan-500/40 focus:outline-none cursor-pointer">
+                    <option value="ZAR" selected>🇿🇦 ZAR (R)</option>
+                    <option value="USD">🇺🇸 USD ($)</option>
+                    <option value="GBP">🇬🇧 GBP (£)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <header id="navbar" class="sticky top-0 z-50 bg-[#18143d]/95 backdrop-blur-md border-b border-purple-900/40 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Brand Logo / Title -->
+            <a href="#hero" onclick="scrollToSection(event, 'hero')" class="flex items-center gap-3 group cursor-pointer">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-[#ff1493] to-[#6a329f] flex items-center justify-center shadow-lg shadow-pink-500/20 group-hover:scale-105 transition-transform shrink-0">
+                    <i class="fa-solid fa-plane-departure text-white text-lg sm:text-xl"></i>
+                </div>
+                <div>
+                    <span class="text-xl sm:text-2xl font-bold tracking-wider text-[#ff1493] uppercase block leading-none">Swannies</span>
+                    <span class="text-[10px] sm:text-xs block tracking-widest text-cyan-300 font-medium mt-1">TRAVELS & TOURS</span>
+                </div>
+            </a>
+
+            <!-- Desktop Nav Links -->
+            <nav class="hidden md:flex items-center gap-8 font-medium">
+                <a href="#hero" onclick="scrollToSection(event, 'hero')" class="hover:text-cyan-400 transition-colors">Home</a>
+                <a href="#destinations" onclick="scrollToSection(event, 'destinations')" class="hover:text-cyan-400 transition-colors">Destinations</a>
+                <a href="#itineraries" onclick="scrollToSection(event, 'itineraries')" class="hover:text-cyan-400 transition-colors">Itineraries</a>
+                <a href="#about" onclick="scrollToSection(event, 'about')" class="hover:text-cyan-400 transition-colors">Our Vibe</a>
+                <a href="#reserve" onclick="scrollToSection(event, 'reserve')" class="bg-[#ff1493] hover:bg-pink-600 text-white px-5 py-2.5 rounded-full font-semibold shadow-lg shadow-pink-500/30 transition-all transform hover:-translate-y-0.5">Book Tour</a>
+            </nav>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobileMenuBtn" onclick="toggleMobileMenu()" class="md:hidden text-2xl text-cyan-300 focus:outline-none p-2">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Nav Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-[#120f30] border-b border-purple-900 px-6 py-6 space-y-4">
+            <a href="#hero" onclick="scrollToSection(event, 'hero'); toggleMobileMenu();" class="block text-lg hover:text-cyan-400 py-1">Home</a>
+            <a href="#destinations" onclick="scrollToSection(event, 'destinations'); toggleMobileMenu();" class="block text-lg hover:text-cyan-400 py-1">Destinations</a>
+            <a href="#itineraries" onclick="scrollToSection(event, 'itineraries'); toggleMobileMenu();" class="block text-lg hover:text-cyan-400 py-1">Itineraries</a>
+            <a href="#about" onclick="scrollToSection(event, 'about'); toggleMobileMenu();" class="block text-lg hover:text-cyan-400 py-1">Our Vibe</a>
+            <div class="pt-2">
+                <a href="#reserve" onclick="scrollToSection(event, 'reserve'); toggleMobileMenu();" class="block text-center bg-[#ff1493] text-white py-3 rounded-full font-semibold shadow-md">Book Tour</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero" class="relative min-h-[85vh] flex items-center justify-center text-center px-4 sm:px-6 py-16 sm:py-24 overflow-hidden">
+        <div class="absolute inset-0 z-0 opacity-25 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1920&q=80')"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-[#18143d]/60 via-[#18143d]/80 to-[#18143d] z-0"></div>
+
+        <div class="relative z-10 max-w-4xl mx-auto space-y-6">
+            <span class="inline-flex items-center gap-2 bg-[#6a329f]/40 border border-purple-400/30 text-cyan-300 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold tracking-wide text-center">
+                <i class="fa-solid fa-compass text-[#76ff03]"></i> Laid-Back International Group Tour Operator
+            </span>
+            <h1 class="text-3xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight leading-tight px-2">
+                Discover • Explore • <span class="text-[#ff1493] font-handwriting text-5xl sm:text-7xl block sm:inline mt-1 sm:mt-0">Adventure</span>
+            </h1>
+            <p class="text-base sm:text-xl text-gray-300 max-w-2xl mx-auto font-normal px-4">
+                Hey there, fellow world explorer! Unpack your curiosity. We curate effortless, soul-stirring group tour packages from South Africa to Thailand, the UK, and the UAE.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 px-4 sm:px-0">
+                <a href="#destinations" onclick="scrollToSection(event, 'destinations')" class="w-full sm:w-auto bg-[#ff1493] hover:bg-pink-600 text-white font-bold px-8 py-4 rounded-full shadow-lg shadow-pink-500/30 transition-all flex items-center justify-center gap-3">
+                    <i class="fa-solid fa-binoculars"></i> Explore Destinations
+                </a>
+                <a href="#itineraries" onclick="scrollToSection(event, 'itineraries')" class="w-full sm:w-auto bg-transparent hover:bg-cyan-500/10 text-cyan-300 border-2 border-cyan-400 font-bold px-8 py-3.5 rounded-full transition-all flex items-center justify-center gap-3">
+                    <i class="fa-solid fa-map-location-dot"></i> View Itineraries
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 pt-10 max-w-3xl mx-auto text-left border-t border-purple-900/60 mt-10 px-4 sm:px-0">
+                <div class="flex items-center gap-3 bg-[#120f30]/60 sm:bg-transparent p-3 sm:p-0 rounded-xl">
+                    <div class="w-10 h-10 rounded-full bg-[#76ff03]/20 text-[#76ff03] flex items-center justify-center shrink-0"><i class="fa-solid fa-user-shield"></i></div>
+                    <div>
+                        <h4 class="font-bold text-sm text-gray-200">Fully Hosted</h4>
+                        <p class="text-xs text-gray-400">Expert tour leaders</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 bg-[#120f30]/60 sm:bg-transparent p-3 sm:p-0 rounded-xl">
+                    <div class="w-10 h-10 rounded-full bg-[#00bfff]/20 text-cyan-300 flex items-center justify-center shrink-0"><i class="fa-solid fa-users"></i></div>
+                    <div>
+                        <h4 class="font-bold text-sm text-gray-200">Small Groups</h4>
+                        <p class="text-xs text-gray-400">Singles & couples friendly</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 bg-[#120f30]/60 sm:bg-transparent p-3 sm:p-0 rounded-xl">
+                    <div class="w-10 h-10 rounded-full bg-[#ff1493]/20 text-pink-400 flex items-center justify-center shrink-0"><i class="fa-solid fa-face-smile"></i></div>
+                    <div>
+                        <h4 class="font-bold text-sm text-gray-200">Stress-Free</h4>
+                        <p class="text-xs text-gray-400">Flights & stays sorted</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Destinations Section -->
+    <section id="destinations" class="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div class="text-center max-w-3xl mx-auto mb-12 sm:mb-16 space-y-3">
+            <span class="text-[#76ff03] font-bold tracking-widest uppercase text-sm">Curated Adventures</span>
+            <h2 class="text-3xl sm:text-5xl font-extrabold">Where Do You Want To Wander?</h2>
+            <p class="text-gray-300 text-sm sm:text-base">Hand-crafted international itineraries departing right from South Africa. Sit back, relax, and leave the planning to us.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+            <!-- Thailand Card -->
+            <div class="bg-[#120f30] rounded-2xl overflow-hidden border border-purple-900/60 card-glow flex flex-col justify-between">
+                <div class="relative h-56 sm:h-64">
+                    <img src="https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?auto=format&fit=crop&w=800&q=80" alt="Thailand" class="w-full h-full object-cover">
+                    <span class="absolute top-4 right-4 bg-[#76ff03] text-gray-900 font-bold px-3 py-1 rounded-full text-xs shadow">Popular</span>
+                    <span class="absolute bottom-4 left-4 bg-[#18143d]/80 backdrop-blur-md text-cyan-300 font-semibold px-3 py-1 rounded-lg text-xs"><i class="fa-regular fa-clock"></i> 10 Days / 9 Nights</span>
+                </div>
+                <div class="p-6 space-y-4 flex-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white">🇹🇭 Vibrant Thailand Escape</h3>
+                        <p class="text-gray-400 text-xs sm:text-sm mt-2">Bangkok street food markets, serene Chiang Mai temples, and crystal-clear Phuket island beaches.</p>
+                        <div class="flex flex-wrap gap-2 mt-4">
+                            <span class="bg-purple-950 text-purple-300 text-xs px-2.5 py-1 rounded-md">Cultural Tours</span>
+                            <span class="bg-purple-950 text-purple-300 text-xs px-2.5 py-1 rounded-md">Island Hopping</span>
+                            <span class="bg-purple-950 text-purple-300 text-xs px-2.5 py-1 rounded-md">Street Food</span>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-purple-900/40 flex items-center justify-between">
+                        <div>
+                            <span class="text-[11px] text-gray-400 block">From per person</span>
+                            <span class="text-xl sm:text-2xl font-bold text-[#ff1493] price-tag" data-zar="R 34,900" data-usd="$1,950" data-gbp="£1,550">R 34,900</span>
+                        </div>
+                        <a href="#reserve" onclick="selectTourPackage('Vibrant Thailand Escape (10 Days)')" class="bg-cyan-500 hover:bg-cyan-400 text-gray-950 font-bold px-4 py-2 rounded-xl text-sm transition-colors">Select Tour</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- UK Card -->
+            <div class="bg-[#120f30] rounded-2xl overflow-hidden border border-purple-900/60 card-glow flex flex-col justify-between">
+                <div class="relative h-56 sm:h-64">
+                    <img src="https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=800&q=80" alt="United Kingdom" class="w-full h-full object-cover">
+                    <span class="absolute top-4 right-4 bg-[#00bfff] text-gray-950 font-bold px-3 py-1 rounded-full text-xs shadow">Classic Heritage</span>
+                    <span class="absolute bottom-4 left-4 bg-[#18143d]/80 backdrop-blur-md text-cyan-300 font-semibold px-3 py-1 rounded-lg text-xs"><i class="fa-regular fa-clock"></i> 12 Days / 11 Nights</span>
+                </div>
+                <div class="p-6 space-y-4 flex-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white">🇬🇧 British Heritage & Icons</h3>
+                        <p class="text-gray-400 text-xs sm:text-sm mt-2">Explore historic London landmarks, picturesque Cotswolds villages, and iconic Scottish Highlands.</p>
+                        <div class="flex flex-wrap gap-2 mt-4">
+                            <span class="bg-purple-950 text-purple-300 text-xs px-2.5 py-1 rounded-md">History & Castles</span>
+                            <span class="bg-purple-950 text-purple-300 text-xs px-2.5 py-1 rounded-md">City Walks</span>
+                            <span class="bg-purple-950 text-purple-300 text-xs px-2.5 py-1 rounded-md">Scenic Rail</span>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-purple-900/40 flex items-center justify-between">
+                        <div>
+                            <span class="text-[11px] text-gray-400 block">From per person</span>
+                            <span class="text-xl sm:text-2xl font-bold text-[#ff1493] price-tag" data-zar="R 49,500" data-usd="$2,750" data-gbp="£2,190">R 49,500</span>
+                        </div>
+                        <a href="#reserve" onclick="selectTourPackage('British Heritage & Icons (12 Days)')" class="bg-cyan-500 hover:bg-cyan-400 text-gray-950 font-bold px-4 py-2 rounded-xl text-sm transition-colors">Select Tour</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- UAE Card -->
+            <div class="bg-[#120f30] rounded-2xl overflow-hidden border border-purple-900/60 card-glow flex flex-col justify-between">
+                <div class="relative h-56 sm:h-64">
+                    <img src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=800&q=80" alt="UAE" class="w-full h-full object-cover">
+                    <span class="absolute top-4 right-4 bg-[#ff1493] text-white font-bold px-3 py-1 rounded-full text-xs shadow">Luxury & Desert</span>
+                    <span class="absolute bottom-4 left-4 bg-[#18143d]/80 backdrop-blur-md text-cyan-300 font-semibold px-3 py-1 rounded-lg text-xs"><i class="fa-regular fa-clock"></i> 7 Days / 6 Nights</span>
+                </div>
+                <div class="p-6 space-y-4 flex-1 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white">🇦🇪 Dubai & Abu Dhabi Odyssey</h3>
+                        <p class="text-gray-400 text-xs sm:text-sm mt-2">Burj Khalifa skyline views, golden desert dune safaris, and majestic Sheikh Zayed Grand Mosque.</p>
+                        <div class="flex flex-wrap gap-2 mt-4">
+                            <span class="bg-purple-950 text-purple-300 text-xs px-2.5 py-1 rounded-md">Modern Wonders</span>
+                            <span class="bg-purple-950 text-purple-300 text-xs px-2.5 py-1 rounded-md">Desert Safari</span>
+                            <span class="bg-purple-950 text-purple-300 text-xs px-2.5 py-1 rounded-md">Luxury Stays</span>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-purple-900/40 flex items-center justify-between">
+                        <div>
+                            <span class="text-[11px] text-gray-400 block">From per person</span>
+                            <span class="text-xl sm:text-2xl font-bold text-[#ff1493] price-tag" data-zar="R 28,900" data-usd="$1,600" data-gbp="£1,280">R 28,900</span>
+                        </div>
+                        <a href="#reserve" onclick="selectTourPackage('Dubai & Abu Dhabi Odyssey (7 Days)')" class="bg-cyan-500 hover:bg-cyan-400 text-gray-950 font-bold px-4 py-2 rounded-xl text-sm transition-colors">Select Tour</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Itinerary Timeline Preview Section -->
+    <section id="itineraries" class="py-16 sm:py-20 bg-[#120f30]/60 border-y border-purple-900/40 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-10 sm:mb-12 space-y-2">
+                <span class="text-[#00bfff] font-bold tracking-widest uppercase text-sm">Day-by-Day Preview</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold">Explore The Itinerary Timeline</h2>
+                <p class="text-gray-400 text-sm sm:text-base">Click a destination below to preview how our relaxed, well-paced group tours unfold.</p>
+                
+                <!-- Tour Toggle Buttons -->
+                <div class="flex flex-wrap justify-center gap-2 sm:gap-3 pt-4">
+                    <button onclick="switchItinerary('thailand')" id="btn-thailand" class="itinerary-tab px-4 sm:px-6 py-2.5 rounded-full font-semibold transition-all bg-[#ff1493] text-white shadow-lg text-xs sm:text-sm">🇹🇭 Thailand</button>
+                    <button onclick="switchItinerary('uk')" id="btn-uk" class="itinerary-tab px-4 sm:px-6 py-2.5 rounded-full font-semibold transition-all bg-[#18143d] text-gray-300 border border-purple-800 text-xs sm:text-sm">🇬🇧 UK Heritage</button>
+                    <button onclick="switchItinerary('uae')" id="btn-uae" class="itinerary-tab px-4 sm:px-6 py-2.5 rounded-full font-semibold transition-all bg-[#18143d] text-gray-300 border border-purple-800 text-xs sm:text-sm">🇦🇪 Dubai Odyssey</button>
+                </div>
+            </div>
+
+            <!-- Timeline Container -->
+            <div id="timeline-content" class="bg-[#18143d] p-5 sm:p-10 rounded-3xl border border-purple-900/60 shadow-xl">
+                <!-- Injected via JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- About / Our Vibe Section -->
+    <section id="about" class="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-12 items-center">
+            <div class="space-y-6">
+                <span class="text-[#76ff03] font-bold uppercase tracking-wider text-sm">About Swannies Travels</span>
+                <h2 class="text-3xl sm:text-5xl font-extrabold leading-tight">We Are Laid-Back World Explorers</h2>
+                <p class="text-gray-300 leading-relaxed text-sm sm:text-base">
+                    Based right here in Centurion, South Africa, Swannies Travels was born out of a genuine passion for discovering new horizons without the rigid stress of corporate group travel. We believe in unhurried mornings, authentic local experiences, and making lifelong friends along the way.
+                </p>
+                <p class="text-gray-300 leading-relaxed text-sm sm:text-base">
+                    Whether you are joining as a solo traveler or with your partner, our group tours are designed to make you feel completely at home anywhere in the world.
+                </p>
+                <div class="grid grid-cols-2 gap-4 sm:gap-6 pt-2">
+                    <div class="bg-[#120f30] p-4 rounded-2xl border border-purple-900/40">
+                        <span class="text-2xl sm:text-3xl font-extrabold text-cyan-300 block">100%</span>
+                        <span class="text-xs sm:text-sm text-gray-400">Personally Hosted Groups</span>
+                    </div>
+                    <div class="bg-[#120f30] p-4 rounded-2xl border border-purple-900/40">
+                        <span class="text-2xl sm:text-3xl font-extrabold text-[#ff1493] block">3+</span>
+                        <span class="text-xs sm:text-sm text-gray-400">Global Continents Explored</span>
+                    </div>
+                </div>
+            </div>
+            <div class="relative">
+                <div class="absolute -inset-2 bg-gradient-to-r from-pink-500 to-cyan-500 rounded-3xl blur-lg opacity-30"></div>
+                <div class="relative bg-[#120f30] p-6 sm:p-8 rounded-3xl border border-purple-900/80 space-y-6">
+                    <h3 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-3">
+                        <i class="fa-solid fa-mug-hot text-[#ff1493]"></i> The Explorer's Promise
+                    </h3>
+                    <ul class="space-y-4 text-gray-300 text-sm sm:text-base">
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-circle-check text-cyan-400 mt-1 shrink-0"></i>
+                            <span>No rushed itineraries or cattle-herd tours. We keep groups small and friendly.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-circle-check text-cyan-400 mt-1 shrink-0"></i>
+                            <span>Transparent pricing with flights, hand-picked accommodations, and key excursions included.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-circle-check text-cyan-400 mt-1 shrink-0"></i>
+                            <span>Seamless departures from OR Tambo / major South African airports.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reservation & Inquiry Form Section -->
+    <section id="reserve" class="py-16 sm:py-20 bg-gradient-to-b from-[#18143d] to-[#120f30] px-4 sm:px-6 lg:px-8 border-t border-purple-900/40">
+        <div class="max-w-4xl mx-auto bg-[#18143d] p-6 sm:p-12 rounded-3xl border border-cyan-500/30 shadow-2xl relative">
+            <div class="text-center max-w-2xl mx-auto mb-8 sm:mb-10 space-y-3">
+                <span class="text-[#ff1493] font-bold uppercase tracking-widest text-sm">Secure Your Seat</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold">Book Your Next Adventure</h2>
+                <p class="text-gray-300 text-xs sm:text-sm">Fill out the quick reservation form below. Our team will get in touch with you to finalize details.</p>
+            </div>
+
+            <form id="reservationForm" onsubmit="handleReservation(event)" class="space-y-5 sm:space-y-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-300 mb-2">Full Name *</label>
+                        <input type="text" id="resName" required placeholder="e.g. Carllo Swanepoel" class="w-full bg-[#120f30] border border-purple-900/80 rounded-xl px-4 py-3 text-white text-sm sm:text-base focus:outline-none focus:border-cyan-400">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-300 mb-2">Email Address *</label>
+                        <input type="email" id="resEmail" required placeholder="carllo@example.com" class="w-full bg-[#120f30] border border-purple-900/80 rounded-xl px-4 py-3 text-white text-sm sm:text-base focus:outline-none focus:border-cyan-400">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-300 mb-2">Phone Number / WhatsApp *</label>
+                        <input type="tel" id="resPhone" required placeholder="+27 82 000 0000" class="w-full bg-[#120f30] border border-purple-900/80 rounded-xl px-4 py-3 text-white text-sm sm:text-base focus:outline-none focus:border-cyan-400">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-300 mb-2">Select Tour Package *</label>
+                        <select id="resPackage" required class="w-full bg-[#120f30] border border-purple-900/80 rounded-xl px-4 py-3 text-white text-sm sm:text-base focus:outline-none focus:border-cyan-400">
+                            <option value="" disabled selected>-- Choose Destination --</option>
+                            <option value="Vibrant Thailand Escape (10 Days)">🇹🇭 Vibrant Thailand Escape (10 Days)</option>
+                            <option value="British Heritage & Icons (12 Days)">🇬🇧 British Heritage & Icons (12 Days)</option>
+                            <option value="Dubai & Abu Dhabi Odyssey (7 Days)">🇦🇪 Dubai & Abu Dhabi Odyssey (7 Days)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-300 mb-2">Number of Travelers *</label>
+                        <select id="resPax" class="w-full bg-[#120f30] border border-purple-900/80 rounded-xl px-4 py-3 text-white text-sm sm:text-base focus:outline-none focus:border-cyan-400">
+                            <option value="1">1 Traveler (Solo)</option>
+                            <option value="2" selected>2 Travelers (Couple / Duo)</option>
+                            <option value="3">3 Travelers</option>
+                            <option value="4+">4+ Travelers (Group)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-300 mb-2">Preferred Departure Month *</label>
+                        <select id="resMonth" class="w-full bg-[#120f30] border border-purple-900/80 rounded-xl px-4 py-3 text-white text-sm sm:text-base focus:outline-none focus:border-cyan-400">
+                            <option value="May 2026">May 2026</option>
+                            <option value="August 2026">August 2026</option>
+                            <option value="October 2026" selected>October 2026</option>
+                            <option value="March 2027">March 2027</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-300 mb-2">Special Requests or Dietary Preferences</label>
+                    <textarea id="resNotes" rows="3" placeholder="Let us know if you have any special requirements..." class="w-full bg-[#120f30] border border-purple-900/80 rounded-xl px-4 py-3 text-white text-sm sm:text-base focus:outline-none focus:border-cyan-400"></textarea>
+                </div>
+
+                <div class="text-center pt-2">
+                    <button type="submit" class="w-full sm:w-auto bg-[#ff1493] hover:bg-pink-600 text-white font-bold px-10 py-4 rounded-full shadow-lg shadow-pink-500/30 transition-all text-base sm:text-lg">
+                        <i class="fa-solid fa-paper-plane mr-2"></i> Submit Tour Inquiry
+                    </button>
+                </div>
+            </form>
+
+            <div id="successAlert" class="hidden mt-6 p-6 bg-emerald-950/80 border border-emerald-500 rounded-2xl text-center space-y-2">
+                <i class="fa-solid fa-circle-check text-4xl text-[#76ff03]"></i>
+                <h3 class="text-xl font-bold text-white">Inquiry Received Successfully!</h3>
+                <p class="text-gray-300 text-sm">Thank you! Your tour reservation request has been logged. Our team in Centurion will contact you shortly.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-[#120f30] border-t border-purple-900/60 py-10 px-4 sm:px-6 lg:px-8 text-center text-xs sm:text-sm text-gray-400">
+        <div class="max-w-7xl mx-auto space-y-4 sm:space-y-6">
+            <div class="flex items-center justify-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#ff1493] to-[#6a329f] flex items-center justify-center text-white">
+                    <i class="fa-solid fa-plane-departure"></i>
+                </div>
+                <span class="text-lg sm:text-xl font-bold tracking-wider text-white">SWANNIES TRAVELS</span>
+            </div>
+            <p>International Group Tour Operator • Centurion, Gauteng, South Africa</p>
+            <div class="flex justify-center gap-6 text-xl text-cyan-300">
+                <a href="#" class="hover:text-[#ff1493] transition-colors"><i class="fa-brands fa-facebook"></i></a>
+                <a href="#" class="hover:text-[#ff1493] transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" class="hover:text-[#ff1493] transition-colors"><i class="fa-brands fa-whatsapp"></i></a>
+            </div>
+            <p class="text-[11px] sm:text-xs text-gray-500 pt-2">&copy; 2026 Swannies Travels. All rights reserved. Designed with wanderlust.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Perfect Top-Aligned Scrolling -->
+    <script>
+        function scrollToSection(event, sectionId) {
+            event.preventDefault();
+            const targetElement = document.getElementById(sectionId);
+            if (targetElement) {
+                const navbarHeight = 85; // Height of the sticky navbar + top info bar
+                const elementRect = targetElement.getBoundingClientRect();
+                const absoluteElementTop = elementRect.top + window.pageYOffset;
+                
+                // Position the top of the section right below the header with a nice padding
+                const scrollToPosition = absoluteElementTop - navbarHeight;
+                
+                window.scrollTo({
+                    top: scrollToPosition,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        function selectTourPackage(packageName) {
+            const selectEl = document.getElementById('resPackage');
+            for(let i=0; i<selectEl.options.length; i++){
+                if(selectEl.options[i].value === packageName){
+                    selectEl.selectedIndex = i;
+                    break;
+                }
+            }
+        }
+
+        function changeCurrency(currency) {
+            const priceTags = document.querySelectorAll('.price-tag');
+            priceTags.forEach(tag => {
+                if (currency === 'ZAR') tag.innerText = tag.getAttribute('data-zar');
+                else if (currency === 'USD') tag.innerText = tag.getAttribute('data-usd');
+                else if (currency === 'GBP') tag.innerText = tag.getAttribute('data-gbp');
+            });
+        }
+
+        const itineraries = {
+            thailand: [
+                { day: "Day 1-2", title: "Arrival in Bangkok & River Cruise", desc: "Touch down at Suvarnabhumi Airport, check into our boutique hotel, and unwind with a welcome dinner cruise along the Chao Phraya River." },
+                { day: "Day 3-5", title: "Ancient Temples & Chiang Mai Highlands", desc: "Fly north to Chiang Mai. Explore ancient golden pagodas, vibrant night markets, and enjoy an ethical elephant sanctuary experience." },
+                { day: "Day 6-9", title: "Phuket Tropical Island Paradise", desc: "Head down south to Phuket. Speedboat island-hopping tour to Phi Phi islands, crystal-clear snorkeling, and beachside relaxation." },
+                { day: "Day 10", title: "Farewell & Return Flight to South Africa", desc: "Enjoy a leisurely tropical breakfast before your transfer to Phuket International Airport for your journey home." }
+            ],
+            uk: [
+                { day: "Day 1-3", title: "Historic London Icons", desc: "Arrive in London. Guided walking tours of Westminster, the Tower of London, South Kensington museums, and West End theatre night." },
+                { day: "Day 4-6", title: "The Cotswolds & Historic Oxford", desc: "Travel through rolling English countryside, staying in honey-colored stone villages and visiting Oxford University colleges." },
+                { day: "Day 7-10", title: "Edinburgh & Scottish Highlands", desc: "Scenic rail journey north to Edinburgh Castle, Loch Ness boat cruise, and majestic Highland glen panoramic tours." },
+                { day: "Day 11-12", title: "Shopping & Departure", desc: "Final morning souvenir shopping on Oxford Street before airport transfer home." }
+            ],
+            uae: [
+                { day: "Day 1-2", title: "Dazzling Dubai & Burj Khalifa", desc: "Arrive in Dubai. Check into luxury hotel, ascend the Burj Khalifa At The Top observation deck, and watch the Dubai Fountain show." },
+                { day: "Day 3-4", title: "Desert Dune Safari & Old Souks", desc: "Thrilling 4x4 dune bashing, camel rides, traditional BBQ dinner under the desert stars, and spice & gold souk walks." },
+                { day: "Day 5-6", title: "Abu Dhabi Grand Mosque & Louvre", desc: "Day trip to Abu Dhabi to explore the breathtaking Sheikh Zayed Grand Mosque and world-class Louvre Abu Dhabi." },
+                { day: "Day 7", title: "Relaxed Brunch & Departure", desc: "Experience famous Dubai Friday brunch before transfer to DXB airport." }
+            ]
+        };
+
+        function switchItinerary(tourKey) {
+            document.querySelectorAll('.itinerary-tab').forEach(btn => {
+                btn.className = "itinerary-tab px-4 sm:px-6 py-2.5 rounded-full font-semibold transition-all bg-[#18143d] text-gray-300 border border-purple-800 text-xs sm:text-sm";
+            });
+            document.getElementById('btn-' + tourKey).className = "itinerary-tab px-4 sm:px-6 py-2.5 rounded-full font-semibold transition-all bg-[#ff1493] text-white shadow-lg text-xs sm:text-sm";
+
+            const container = document.getElementById('timeline-content');
+            const data = itineraries[tourKey];
+            
+            let html = '<div class="space-y-6 sm:space-y-8 relative before:absolute before:inset-0 before:left-4 sm:before:left-5 before:w-0.5 before:bg-purple-900">';
+            data.forEach((item, index) => {
+                html += `
+                    <div class="relative flex items-start gap-4 sm:gap-6">
+                        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-cyan-400 to-[#6a329f] text-gray-950 font-bold text-xs sm:text-sm flex items-center justify-center z-10 shadow-md shrink-0">
+                            ${index + 1}
+                        </div>
+                        <div class="bg-[#120f30] p-4 sm:p-6 rounded-2xl border border-purple-900/60 flex-1">
+                            <span class="text-[11px] sm:text-xs font-bold text-cyan-300 uppercase tracking-wider">${item.day}</span>
+                            <h4 class="text-lg sm:text-xl font-bold text-white mt-1">${item.title}</h4>
+                            <p class="text-gray-300 text-xs sm:text-sm mt-2">${item.desc}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            switchItinerary('thailand');
+        });
+
+        function handleReservation(event) {
+            event.preventDefault();
+            document.getElementById('reservationForm').reset();
+            const alertBox = document.getElementById('successAlert');
+            alertBox.classList.remove('hidden');
+            alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => {
+                alertBox.classList.add('hidden');
+            }, 6000);
+        }
+    </script>
+</body>
+</html>
