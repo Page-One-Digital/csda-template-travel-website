@@ -36,7 +36,7 @@
             height: 100vh;
             pointer-events: none;
             z-index: 0;
-            opacity: 0.45;
+            opacity: 0.7;
         }
         .site-content {
             position: relative;
@@ -46,7 +46,7 @@
 </head>
 <body class="bg-[#18143d] text-gray-100">
 
-    <!-- Interactive World Map & Flightradar Simulation Canvas -->
+    <!-- Random Flightradar Airplanes Canvas (No Map) -->
     <canvas id="flightMapCanvas"></canvas>
 
     <div class="site-content">
@@ -420,7 +420,7 @@
         </footer>
     </div>
 
-    <!-- JavaScript for Live World Map & Rotating Flightradar Airplanes -->
+    <!-- JavaScript for Random Multi-Directional Airplanes -->
     <script>
         function scrollToSection(event, sectionId) {
             event.preventDefault();
@@ -526,7 +526,7 @@
             }, 6000);
         }
 
-        // --- ADVANCED CANVAS WORLD MAP & FLIGHTRADAR SIMULATION ---
+        // --- RANDOM MULTI-DIRECTIONAL AIRPLANES SIMULATION ---
         const canvas = document.getElementById('flightMapCanvas');
         const ctx = canvas.getContext('2d');
 
@@ -537,139 +537,141 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        // Simplified world continent polygon outlines (normalized 0 to 1)
-        // Representing North America, South America, Europe/Africa, Asia/Australia
-        const worldContinents = [
-            // Africa
-            [[0.48,0.55],[0.52,0.58],[0.55,0.70],[0.51,0.85],[0.45,0.80],[0.42,0.65],[0.44,0.55]],
-            // Europe
-            [[0.46,0.32],[0.53,0.30],[0.55,0.38],[0.47,0.40],[0.44,0.35]],
-            // Asia
-            [[0.56,0.25],[0.75,0.22],[0.85,0.35],[0.80,0.50],[0.65,0.48],[0.58,0.35]],
-            // North America
-            [[0.15,0.22],[0.30,0.20],[0.32,0.38],[0.22,0.45],[0.18,0.32]],
-            // South America
-            [[0.28,0.52],[0.36,0.54],[0.34,0.78],[0.26,0.75],[0.25,0.60]],
-            // Australia
-            [[0.82,0.70],[0.92,0.72],[0.90,0.85],[0.80,0.82]]
-        ];
-
-        // Major airports (Hub: Johannesburg/Centurion JNB, Bangkok BKK, London LHR, Dubai DXB, etc.)
-        const airports = {
-            JNB: { x: 0.52, y: 0.78, name: "JNB" },
-            BKK: { x: 0.76, y: 0.45, name: "BKK" },
-            LHR: { x: 0.48, y: 0.28, name: "LHR" },
-            DXB: { x: 0.63, y: 0.40, name: "DXB" },
-            SYD: { x: 0.90, y: 0.82, name: "SYD" },
-            JFK: { x: 0.24, y: 0.32, name: "JFK" },
-            HND: { x: 0.86, y: 0.35, name: "HND" }
-        };
-
-        const routes = [
-            { from: 'JNB', to: 'BKK' },
-            { from: 'JNB', to: 'LHR' },
-            { from: 'JNB', to: 'DXB' },
-            { from: 'LHR', to: 'JFK' },
-            { from: 'DXB', to: 'SYD' },
-            { from: 'BKK', to: 'HND' },
-            { from: 'JNB', to: 'SYD' }
-        ];
-
         let flights = [];
+        const colors = ['#00bfff', '#ff1493', '#76ff03', '#ffffff', '#a855f7'];
 
         function initFlights() {
             flights = [];
-            for (let i = 0; i < 18; i++) {
-                const route = routes[Math.floor(Math.random() * routes.length)];
-                const start = airports[route.from];
-                const end = airports[route.to];
-                const colors = ['#00bfff', '#ff1493', '#76ff03', '#ffffff'];
-                
-                flights.push({
-                    startX: start.x, startY: start.y,
-                    endX: end.x, endY: end.y,
-                    progress: Math.random(),
-                    speed: 0.0004 + Math.random() * 0.0006, // Very slow Flightradar-like glide
-                    color: colors[Math.floor(Math.random() * colors.length)]
-                });
+            // Create random airplanes moving in various directions across the screen
+            for (let i = 0; i < 22; i++) {
+                spawnFlight(true);
             }
         }
-        initFlights();
 
-        function drawWorldMap() {
-            ctx.fillStyle = 'rgba(28, 22, 70, 0.6)';
-            ctx.strokeStyle = 'rgba(0, 191, 255, 0.15)';
-            ctx.lineWidth = 1;
+        function spawnFlight(randomProgress = false) {
+            const margin = 100;
+            const edge = Math.floor(Math.random() * 4); // 0: top, 1: bottom, 2: left, 3: right
+            let startX, startY, endX, endY;
 
-            worldContinents.forEach(poly => {
-                ctx.beginPath();
-                poly.forEach((pt, idx) => {
-                    const px = pt[0] * canvas.width;
-                    const py = pt[1] * canvas.height;
-                    if (idx === 0) ctx.moveTo(px, py);
-                    else ctx.lineTo(px, py);
-                });
-                ctx.closePath();
-                ctx.fill();
-                ctx.stroke();
+            if (edge === 0) { // Top -> Down (or diagonal)
+                startX = Math.random() * canvas.width;
+                startY = -margin;
+                endX = Math.random() * canvas.width;
+                endY = canvas.height + margin;
+            } else if (edge === 1) { // Bottom -> Up (or diagonal)
+                startX = Math.random() * canvas.width;
+                startY = canvas.height + margin;
+                endX = Math.random() * canvas.width;
+                endY = -margin;
+            } else if (edge === 2) { // Left -> Right (or diagonal)
+                startX = -margin;
+                startY = Math.random() * canvas.height;
+                endX = canvas.width + margin;
+                endY = Math.random() * canvas.height;
+            } else { // Right -> Left (or diagonal)
+                startX = canvas.width + margin;
+                startY = Math.random() * canvas.height;
+                endX = -margin;
+                endY = Math.random() * canvas.height;
+            }
+
+            const dx = endX - startX;
+            const dy = endY - startY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const speed = 1 + Math.random() * 1.5; // Pixels per frame
+
+            flights.push({
+                x: randomProgress ? Math.random() * canvas.width : startX,
+                y: randomProgress ? Math.random() * canvas.height : startY,
+                startX: startX,
+                startY: startY,
+                endX: endX,
+                endY: endY,
+                dx: dx,
+                dy: dy,
+                dist: dist,
+                speed: speed,
+                angle: Math.atan2(dy, dx),
+                color: colors[Math.floor(Math.random() * colors.length)],
+                history: []
             });
         }
+
+        initFlights();
 
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Draw world map landmasses
-            drawWorldMap();
-
-            // Draw flight paths & airplane icons
             flights.forEach(f => {
-                f.progress += f.speed;
-                if (f.progress >= 1) f.progress = 0;
+                // Move airplane along its trajectory
+                const vx = (f.dx / f.dist) * f.speed;
+                const vy = (f.dy / f.dist) * f.speed;
+                f.x += vx;
+                f.y += vy;
 
-                const startX = f.startX * canvas.width;
-                const startY = f.startY * canvas.height;
-                const endX = f.endX * canvas.width;
-                const endY = f.endY * canvas.height;
+                // Store trail history
+                f.history.push({ x: f.x, y: f.y });
+                if (f.history.length > 25) {
+                    f.history.shift();
+                }
 
-                // Curved arc control point
-                const cpX = (startX + endX) / 2;
-                const cpY = Math.min(startY, endY) - 100;
-
-                // Draw thin route trail
-                ctx.beginPath();
-                ctx.moveTo(startX, startY);
-                ctx.quadraticCurveTo(cpX, cpY, endX, endY);
-                ctx.strokeStyle = 'rgba(106, 50, 159, 0.25)';
-                ctx.lineWidth = 1;
-                ctx.stroke();
-
-                // Calculate current position (Quadratic bezier)
-                const t = f.progress;
-                const currX = (1 - t) * (1 - t) * startX + 2 * (1 - t) * t * cpX + t * t * endX;
-                const currY = (1 - t) * (1 - t) * startY + 2 * (1 - t) * t * cpY + t * t * endY;
-
-                // Calculate angle for airplane rotation heading
-                const nextT = Math.min(t + 0.01, 1);
-                const nextX = (1 - nextT) * (1 - nextT) * startX + 2 * (1 - nextT) * nextT * cpX + nextT * nextT * endX;
-                const nextY = (1 - nextT) * (1 - nextT) * startY + 2 * (1 - nextT) * nextT * cpY + nextT * nextT * endY;
-                const angle = Math.atan2(nextY - currY, nextX - currX);
+                // Draw flight trail
+                if (f.history.length > 1) {
+                    ctx.beginPath();
+                    ctx.moveTo(f.history[0].x, f.history[0].y);
+                    for (let i = 1; i < f.history.length; i++) {
+                        ctx.lineTo(f.history[i].x, f.history[i].y);
+                    }
+                    ctx.strokeStyle = f.color;
+                    ctx.lineWidth = 1;
+                    ctx.globalAlpha = 0.35;
+                    ctx.stroke();
+                    ctx.globalAlpha = 1.0;
+                }
 
                 // Draw Airplane Icon
                 ctx.save();
-                ctx.translate(currX, currY);
-                ctx.rotate(angle);
+                ctx.translate(f.x, f.y);
+                ctx.rotate(f.angle);
                 
-                // Glow effect
                 ctx.shadowColor = f.color;
                 ctx.shadowBlur = 12;
 
                 ctx.fillStyle = f.color;
-                ctx.font = "14px FontAwesome";
+                ctx.font = "16px FontAwesome";
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
-                ctx.fillText("\uf072", 0, 0); // FontAwesome airplane symbol ✈
+                ctx.fillText("\uf072", 0, 0); // Airplane ✈
 
                 ctx.restore();
+
+                // If plane reaches destination boundary, respawn new flight
+                const margin = 150;
+                if (f.x < -margin || f.x > canvas.width + margin || f.y < -margin || f.y > canvas.height + margin) {
+                    // Reset flight with new random path
+                    const edge = Math.floor(Math.random() * 4);
+                    if (edge === 0) {
+                        f.startX = Math.random() * canvas.width; f.startY = -margin;
+                        f.endX = Math.random() * canvas.width; f.endY = canvas.height + margin;
+                    } else if (edge === 1) {
+                        f.startX = Math.random() * canvas.width; f.startY = canvas.height + margin;
+                        f.endX = Math.random() * canvas.width; f.endY = -margin;
+                    } else if (edge === 2) {
+                        f.startX = -margin; f.startY = Math.random() * canvas.height;
+                        f.endX = canvas.width + margin; f.endY = Math.random() * canvas.height;
+                    } else {
+                        f.startX = canvas.width + margin; f.startY = Math.random() * canvas.height;
+                        f.endX = -margin; f.endY = Math.random() * canvas.height;
+                    }
+                    f.x = f.startX;
+                    f.y = f.startY;
+                    f.dx = f.endX - f.startX;
+                    f.dy = f.endY - f.startY;
+                    f.dist = Math.sqrt(f.dx * f.dx + f.dy * f.dy);
+                    f.angle = Math.atan2(f.dy, f.dx);
+                    f.speed = 1 + Math.random() * 1.5;
+                    f.history = [];
+                }
             });
 
             requestAnimationFrame(animate);
