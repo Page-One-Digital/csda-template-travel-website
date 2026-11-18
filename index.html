@@ -37,17 +37,46 @@
             position: relative;
             z-index: 10;
         }
+        #audioOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(24, 20, 61, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease;
+        }
     </style>
 </head>
-<body class="bg-[#18143d] text-gray-100 flex flex-col justify-between">
+<body class="bg-[#18143d] text-gray-100 flex flex-col justify-between min-h-screen">
 
-    <!-- Random Multi-Directional Airplanes Canvas Background -->
+    <!-- Interactive Boarding Pass Audio Gate -->
+    <div id="audioOverlay">
+        <div class="max-w-md w-full mx-4 text-center bg-[#120f30] border border-purple-900/80 p-8 rounded-3xl shadow-2xl space-y-6">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-cyan-500/20 text-cyan-300 text-2xl mx-auto shadow-inner">
+                <i class="fa-solid fa-plane-departure"></i>
+            </div>
+            <div class="space-y-2">
+                <h2 class="text-xl font-bold tracking-wide text-white">Boarding Pass Ready</h2>
+                <p class="text-xs text-gray-300">Click below to tune into our gate announcement and enter Swannies Travels & Tours.</p>
+            </div>
+            <button onclick="startAirportExperience()" class="w-full bg-[#ff1493] hover:bg-pink-600 text-white font-bold py-3.5 px-6 rounded-2xl shadow-lg shadow-pink-500/30 transition-all text-sm flex items-center justify-center gap-2 cursor-pointer">
+                <i class="fa-solid fa-volume-high"></i> Board Flight & Enter Site
+            </button>
+        </div>
+    </div>
+
+    <!-- Hidden Audio Element for ElevenLabs Recording -->
+    <audio id="elevenLabsAudio" src="https://raw.githubusercontent.com/Page-One-Digital/csda-template-travel-website/main/Assets/announcement.mp3" preload="auto"></audio>
+
+    <!-- Canvas Background -->
     <canvas id="flightMapCanvas"></canvas>
 
-    <!-- Top Navigation Bar with Larger Header Logo/Text -->
+    <!-- Header Navigation -->
     <header class="site-content bg-[#18143d]/90 backdrop-blur-md border-b border-purple-900/40 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-24 flex items-center justify-between">
-            <!-- Brand Logo & Larger Name Side-by-Side -->
             <a href="#" class="flex items-center gap-3.5 group cursor-pointer">
                 <img src="https://raw.githubusercontent.com/Page-One-Digital/csda-template-travel-website/f2eded1a4d6f5dd6fc657ecec4edd9ecd4d6e72e/Assets/logo3.svg" alt="Swannies Travels Logo" class="h-16 w-auto object-contain group-hover:scale-105 transition-transform">
                 <div>
@@ -56,7 +85,6 @@
                 </div>
             </a>
 
-            <!-- Header Contact Quick Links -->
             <div class="hidden md:flex items-center gap-6 text-xs text-gray-300 font-medium">
                 <span class="flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-cyan-300"></i> Centurion, Gauteng, SA</span>
                 <a href="https://wa.me/27817678205" target="_blank" class="hover:text-cyan-300 transition-colors flex items-center gap-1.5"><i class="fa-brands fa-whatsapp text-emerald-400"></i> 081 767 8205</a>
@@ -64,11 +92,10 @@
         </div>
     </header>
 
-    <!-- Main Hero / Under Construction Content -->
+    <!-- Main Content -->
     <main class="site-content flex-1 flex items-center justify-center px-4 py-12">
         <div class="max-w-2xl w-full mx-auto text-center bg-[#120f30]/85 backdrop-blur-xl p-8 sm:p-12 rounded-3xl border border-purple-900/60 shadow-2xl space-y-6">
             
-            <!-- Transparent Logo Integration in Card Center -->
             <div class="flex justify-center">
                 <img src="https://raw.githubusercontent.com/Page-One-Digital/csda-template-travel-website/f2eded1a4d6f5dd6fc657ecec4edd9ecd4d6e72e/Assets/logo3.svg" alt="Swannies Travels Logo" class="h-40 sm:h-48 w-auto object-contain drop-shadow-2xl">
             </div>
@@ -85,11 +112,10 @@
                 Hey there, fellow world explorer! We are currently upgrading our flight paths and polishing our brand-new digital home. Unpack your curiosity—we'll be live very soon with soul-stirring group tours from South Africa!
             </p>
 
-            <!-- Quick Contact / Inquiry Section -->
+            <!-- Quick Contact Section -->
             <div class="pt-6 border-t border-purple-900/60 space-y-4">
                 <p class="text-xs sm:text-sm text-gray-300 font-medium">Get in touch with our Centurion team right away:</p>
                 
-                <!-- WhatsApp Buttons -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <a href="https://wa.me/27817678205?text=Hi%20Swannies%20Travels,%20I'm%20interested%20in%20your%20tours!" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-3 rounded-2xl shadow-lg shadow-emerald-600/30 transition-all text-xs sm:text-sm flex items-center justify-center gap-2">
                         <i class="fa-brands fa-whatsapp text-lg"></i> WhatsApp 081 767 8205
@@ -99,7 +125,6 @@
                     </a>
                 </div>
 
-                <!-- Email Buttons -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <a href="mailto:swanniestravels@gmail.com" class="bg-[#ff1493] hover:bg-pink-600 text-white font-bold px-4 py-3 rounded-2xl shadow-lg shadow-pink-500/30 transition-all text-xs sm:text-sm flex items-center justify-center gap-2">
                         <i class="fa-solid fa-envelope"></i> swanniestravels@gmail.com
@@ -125,8 +150,51 @@
         </div>
     </footer>
 
-    <!-- JavaScript for Multi-Directional Airplanes Animation -->
+    <!-- JavaScript for Chime + ElevenLabs Audio Playback -->
     <script>
+        function startAirportExperience() {
+            const overlay = document.getElementById('audioOverlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.remove(), 500);
+
+            try {
+                // 1. Play Web Audio API Chime (Ding-Dong)
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                const ctx = new AudioContext();
+
+                function playTone(frequency, startTime, duration) {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(frequency, ctx.currentTime + startTime);
+                    
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime + startTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + startTime + duration);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc.start(ctx.currentTime + startTime);
+                    osc.stop(ctx.currentTime + startTime + duration);
+                }
+
+                // Play E5 then C5 chime notes
+                playTone(659.25, 0.0, 0.8);
+                playTone(523.25, 0.3, 1.0);
+
+                // 2. Play ElevenLabs MP3 recording right after chime finishes
+                setTimeout(() => {
+                    const voiceAudio = document.getElementById('elevenLabsAudio');
+                    voiceAudio.volume = 1.0;
+                    voiceAudio.play().catch(err => console.log("Audio play error:", err));
+                }, 1400);
+
+            } catch (e) {
+                console.log("Audio Context Error:", e);
+            }
+        }
+
+        // Canvas Multi-Directional Background Planes
         const canvas = document.getElementById('flightMapCanvas');
         const ctx = canvas.getContext('2d');
 
@@ -142,7 +210,7 @@
 
         function initFlights() {
             flights = [];
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 15; i++) {
                 spawnFlight(true);
             }
         }
@@ -153,43 +221,29 @@
             let startX, startY, endX, endY;
 
             if (edge === 0) {
-                startX = Math.random() * canvas.width;
-                startY = -margin;
-                endX = Math.random() * canvas.width;
-                endY = canvas.height + margin;
+                startX = Math.random() * canvas.width; startY = -margin;
+                endX = Math.random() * canvas.width; endY = canvas.height + margin;
             } else if (edge === 1) {
-                startX = Math.random() * canvas.width;
-                startY = canvas.height + margin;
-                endX = Math.random() * canvas.width;
-                endY = -margin;
+                startX = Math.random() * canvas.width; startY = canvas.height + margin;
+                endX = Math.random() * canvas.width; endY = -margin;
             } else if (edge === 2) {
-                startX = -margin;
-                startY = Math.random() * canvas.height;
-                endX = canvas.width + margin;
-                endY = Math.random() * canvas.height;
+                startX = -margin; startY = Math.random() * canvas.height;
+                endX = canvas.width + margin; endY = Math.random() * canvas.height;
             } else {
-                startX = canvas.width + margin;
-                startY = Math.random() * canvas.height;
-                endX = -margin;
-                endY = Math.random() * canvas.height;
+                startX = canvas.width + margin; startY = Math.random() * canvas.height;
+                endX = -margin; endY = Math.random() * canvas.height;
             }
 
             const dx = endX - startX;
             const dy = endY - startY;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            const speed = 1 + Math.random() * 1.5;
+            const flightSpeed = 1 + Math.random() * 1.5;
 
             flights.push({
                 x: randomProgress ? Math.random() * canvas.width : startX,
                 y: randomProgress ? Math.random() * canvas.height : startY,
-                startX: startX,
-                startY: startY,
-                endX: endX,
-                endY: endY,
-                dx: dx,
-                dy: dy,
-                dist: dist,
-                speed: speed,
+                startX: startX, startY: startY, endX: endX, endY: endY,
+                dx: dx, dy: dy, dist: dist, speed: flightSpeed,
                 angle: Math.atan2(dy, dx),
                 color: colors[Math.floor(Math.random() * colors.length)],
                 history: []
@@ -198,19 +252,16 @@
 
         initFlights();
 
-        function animate() {
+        function animateBgFlights() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             flights.forEach(f => {
                 const vx = (f.dx / f.dist) * f.speed;
                 const vy = (f.dy / f.dist) * f.speed;
-                f.x += vx;
-                f.y += vy;
+                f.x += vx; f.y += vy;
 
                 f.history.push({ x: f.x, y: f.y });
-                if (f.history.length > 25) {
-                    f.history.shift();
-                }
+                if (f.history.length > 25) f.history.shift();
 
                 if (f.history.length > 1) {
                     ctx.beginPath();
@@ -228,16 +279,13 @@
                 ctx.save();
                 ctx.translate(f.x, f.y);
                 ctx.rotate(f.angle);
-                
                 ctx.shadowColor = f.color;
                 ctx.shadowBlur = 12;
-
                 ctx.fillStyle = f.color;
                 ctx.font = "16px FontAwesome";
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
                 ctx.fillText("\uf072", 0, 0);
-
                 ctx.restore();
 
                 const margin = 150;
@@ -256,10 +304,8 @@
                         f.startX = canvas.width + margin; f.startY = Math.random() * canvas.height;
                         f.endX = -margin; f.endY = Math.random() * canvas.height;
                     }
-                    f.x = f.startX;
-                    f.y = f.startY;
-                    f.dx = f.endX - f.startX;
-                    f.dy = f.endY - f.startY;
+                    f.x = f.startX; f.y = f.startY;
+                    f.dx = f.endX - f.startX; f.dy = f.endY - f.startY;
                     f.dist = Math.sqrt(f.dx * f.dx + f.dy * f.dy);
                     f.angle = Math.atan2(f.dy, f.dx);
                     f.speed = 1 + Math.random() * 1.5;
@@ -267,10 +313,10 @@
                 }
             });
 
-            requestAnimationFrame(animate);
+            requestAnimationFrame(animateBgFlights);
         }
 
-        animate();
+        animateBgFlights();
     </script>
 </body>
 </html>
