@@ -1,1 +1,743 @@
-<h1>Planner</h1>
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swannies Travels & Tours | Interactive AI Trip Planner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        midnight: '#120733',
+                        voidpurple: '#16083b',
+                        deepindigo: '#1b0b47',
+                        hotpink: '#ff2a85',
+                        magenta: '#e91e63',
+                        royal: '#7c3aed',
+                        emeraldwa: '#00a86b',
+                        skycyan: '#00c2ff'
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'Montserrat', 'Inter', 'sans-serif'],
+                        heading: ['Montserrat', 'Poppins', 'sans-serif'],
+                        script: ['Pacifico', 'cursive']
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Pacifico&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: radial-gradient(circle at 20% 15%, #24105e 0%, #140838 45%, #0c0424 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.03);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 42, 133, 0.35);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 42, 133, 0.65);
+        }
+
+        .theme-card {
+            background: rgba(22, 8, 59, 0.88);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(168, 85, 247, 0.25);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        }
+
+        .glow-pink-border {
+            border-color: rgba(255, 42, 133, 0.45);
+            box-shadow: 0 0 24px rgba(255, 42, 133, 0.14);
+        }
+
+        .script-highlight {
+            font-family: 'Pacifico', cursive;
+            color: #ff2a85;
+            text-shadow: 0 0 18px rgba(255, 42, 133, 0.35);
+        }
+
+        @keyframes driftTrail {
+            0% {
+                transform: translate3d(-20px, 10px, 0) rotate(-6deg);
+                opacity: 0.45;
+            }
+            50% {
+                transform: translate3d(18px, -12px, 0) rotate(4deg);
+                opacity: 0.85;
+            }
+            100% {
+                transform: translate3d(-20px, 10px, 0) rotate(-6deg);
+                opacity: 0.45;
+            }
+        }
+
+        .flight-trail {
+            position: fixed;
+            pointer-events: none;
+            z-index: 0;
+            animation: driftTrail 9s ease-in-out infinite;
+        }
+
+        .chat-bubble-bot {
+            background: rgba(34, 15, 86, 0.9);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-bottom-left-radius: 6px;
+        }
+
+        .chat-bubble-user {
+            background: linear-gradient(135deg, #ff2a85 0%, #c026d3 100%);
+            border-bottom-right-radius: 6px;
+            box-shadow: 0 8px 20px rgba(255, 42, 133, 0.25);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans antialiased selection:bg-hotpink selection:text-white relative">
+
+    <!-- Decorative Flight Trails -->
+    <div class="flight-trail top-28 left-8 text-skycyan hidden sm:block" style="animation-delay: 0s;">
+        <svg width="95" height="36" viewBox="0 0 95 36" fill="none">
+            <path d="M4 28C28 24 48 16 74 11" stroke="#00c2ff" stroke-width="1.5" stroke-dasharray="3 3" stroke-linecap="round"/>
+            <path d="M84 9L73 6L76 11L72 15L84 9Z" fill="#00c2ff"/>
+        </svg>
+    </div>
+    <div class="flight-trail top-1/3 right-10 text-hotpink hidden md:block" style="animation-delay: 2.5s;">
+        <svg width="105" height="40" viewBox="0 0 105 40" fill="none">
+            <path d="M6 31C32 25 56 18 84 12" stroke="#ff2a85" stroke-width="1.5" stroke-dasharray="3 3" stroke-linecap="round"/>
+            <path d="M95 10L83 7L86 12L82 16L95 10Z" fill="#ff2a85"/>
+        </svg>
+    </div>
+
+    <!-- Navigation Bar -->
+    <header class="relative z-20 bg-[#0e0529]/90 backdrop-blur-md border-b border-purple-500/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-3">
+            <div class="flex items-center space-x-3 min-w-0">
+                <a href="index.html" class="flex items-center space-x-2 group">
+                    <img src="https://raw.githubusercontent.com/Page-One-Digital/csda-template-travel-website/f2eded1a4d6f5dd6fc657ecec4edd9ecd4d6e72e/Assets/logo3.svg" alt="Swannies Travels Logo" class="h-10 sm:h-12 w-auto object-contain">
+                    <div class="truncate">
+                        <div class="flex items-center gap-2">
+                            <span class="font-heading font-extrabold text-sm sm:text-lg tracking-wider text-white uppercase">SWANNIES</span>
+                            <span class="hidden sm:inline-block text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-hotpink/20 text-hotpink border border-hotpink/40">
+                                AI Planner
+                            </span>
+                        </div>
+                        <p class="text-[11px] sm:text-xs font-semibold tracking-widest text-skycyan uppercase truncate">
+                            Travels &amp; Tours
+                        </p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="flex items-center space-x-3 sm:space-x-5 text-xs">
+                <a href="index.html" class="text-purple-200 hover:text-cyan-300 font-medium transition-colors flex items-center gap-1">
+                    <i class="fa-solid fa-arrow-left text-[11px]"></i>
+                    <span>Home</span>
+                </a>
+
+                <div class="hidden md:flex items-center space-x-1.5 text-purple-200/85">
+                    <i class="fa-solid fa-location-dot text-skycyan"></i>
+                    <span>Centurion, Gauteng, SA</span>
+                </div>
+
+                <a href="https://wa.me/27817678205" target="_blank" rel="noopener noreferrer" class="hidden sm:flex items-center space-x-1.5 text-emerald-300 hover:text-emerald-200 font-medium transition-colors">
+                    <i class="fa-brands fa-whatsapp text-emeraldwa text-sm"></i>
+                    <span>081 767 8205</span>
+                </a>
+
+                <button id="openApiModalBtn" type="button" class="px-3 py-2 rounded-lg bg-[#231059] hover:bg-[#2d1570] text-white border border-purple-400/30 hover:border-hotpink/60 font-medium flex items-center space-x-1.5 transition-all cursor-pointer">
+                    <i class="fa-solid fa-key text-hotpink"></i>
+                    <span id="apiBtnLabel">API Settings</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Header Banner -->
+    <section class="relative z-10 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+                <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#1f0e52] border border-purple-400/25 text-xs text-purple-200 mb-2">
+                    <span class="w-2 h-2 rounded-full bg-emeraldwa animate-pulse"></span>
+                    <span>AI-Powered Travel Discovery &amp; Instant Lead Handoff</span>
+                </div>
+                <h1 class="font-heading font-extrabold text-2xl sm:text-4xl text-white tracking-tight">
+                    Plan Your Next <span class="script-highlight text-3xl sm:text-5xl mx-1">Dream</span> Escape
+                </h1>
+            </div>
+            <p class="text-xs sm:text-sm text-purple-200/80 max-w-md">
+                Brainstorm Thailand golf tours, island getaways, or group trips from South Africa—then pass your brief directly to our Centurion team for live pricing.
+            </p>
+        </div>
+    </section>
+
+    <!-- Main Workspace -->
+    <main class="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+
+        <!-- Left Column: Interactive Chat Planner -->
+        <section class="lg:col-span-8 theme-card glow-pink-border rounded-2xl flex flex-col min-h-[540px] lg:h-[calc(100vh-14.5rem)] overflow-hidden">
+
+            <div class="px-4 sm:px-6 py-3.5 bg-[#1a0947] border-b border-purple-500/20 flex items-center justify-between gap-3">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-hotpink to-royal flex items-center justify-center text-white shadow-md">
+                        <i class="fa-solid fa-earth-africa text-base"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <h2 class="font-heading font-bold text-sm sm:text-base text-white">Swannies Interactive Travel Assistant</h2>
+                            <span id="modePill" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emeraldwa/20 text-emerald-300 border border-emeraldwa/40">
+                                Simulator Ready
+                            </span>
+                        </div>
+                        <p class="text-[11px] text-purple-200/75">Thailand Golf • International Holidays • South African Tours</p>
+                    </div>
+                </div>
+
+                <button id="resetChatBtn" type="button" title="Start Fresh Chat" class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-hotpink/20 text-purple-200 hover:text-white border border-white/10 hover:border-hotpink/40 text-xs flex items-center space-x-1.5 transition-all cursor-pointer">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    <span class="hidden sm:inline">Reset</span>
+                </button>
+            </div>
+
+            <div class="px-4 sm:px-6 py-2.5 bg-[#140638]/90 border-b border-purple-500/15 flex items-center gap-2 overflow-x-auto text-xs">
+                <span class="text-purple-300/70 font-medium shrink-0 mr-1">
+                    <i class="fa-solid fa-sparkles text-hotpink mr-1"></i>Quick ideas:
+                </span>
+                <button type="button" class="quick-chip shrink-0 px-3 py-1.5 rounded-full bg-[#24105e] hover:bg-hotpink text-purple-100 hover:text-white border border-purple-400/25 hover:border-hotpink transition-all cursor-pointer">
+                    10-Day Thailand Golf Trip
+                </button>
+                <button type="button" class="quick-chip shrink-0 px-3 py-1.5 rounded-full bg-[#24105e] hover:bg-hotpink text-purple-100 hover:text-white border border-purple-400/25 hover:border-hotpink transition-all cursor-pointer">
+                    Honeymoon &amp; Beach Escape
+                </button>
+                <button type="button" class="quick-chip shrink-0 px-3 py-1.5 rounded-full bg-[#24105e] hover:bg-hotpink text-purple-100 hover:text-white border border-purple-400/25 hover:border-hotpink transition-all cursor-pointer">
+                    Group Tour Quote
+                </button>
+            </div>
+
+            <div id="chatContainer" class="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4">
+                <div class="flex items-start space-x-3 max-w-2xl">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-royal to-hotpink flex items-center justify-center text-white text-xs shrink-0 mt-1">
+                        <i class="fa-solid fa-compass"></i>
+                    </div>
+                    <div class="chat-bubble-bot p-4 rounded-2xl text-sm text-purple-50 leading-relaxed">
+                        Hey there, fellow explorer! Welcome to <strong class="text-white">Swannies Travels &amp; Tours</strong>.
+                        Whether you're planning a <strong class="text-skycyan">Thailand golf tour</strong> (Bangkok, Hua Hin, Phuket, Pattaya, Chiang Mai), a beach getaway, or a group package from South Africa, let's build your dream itinerary!
+                        <div class="mt-2.5 pt-2.5 border-t border-purple-400/15 text-xs text-purple-200/85">
+                            Which destination or vibe are you leaning toward, and roughly when are you hoping to travel?
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="typingRow" class="hidden px-6 py-2 bg-[#140638]/70 border-t border-purple-500/10 flex items-center space-x-2 text-xs text-purple-200">
+                <i class="fa-solid fa-plane-departure text-hotpink animate-bounce"></i>
+                <span>Mapping your travel ideas...</span>
+            </div>
+
+            <form id="chatForm" class="p-3 sm:p-4 bg-[#190845] border-t border-purple-500/20">
+                <div class="flex items-end gap-2.5">
+                    <textarea id="chatInput" rows="1" placeholder="Ask about golf courses in Thailand, travel dates, budget, or group size..." class="flex-1 bg-[#10042e] text-white placeholder-purple-300/45 text-sm px-4 py-3 rounded-xl border border-purple-400/25 focus:outline-none focus:border-hotpink resize-none max-h-28 transition-colors"></textarea>
+                    <button id="sendChatBtn" type="submit" class="h-11 px-4 sm:px-5 rounded-xl bg-gradient-to-r from-hotpink to-magenta hover:opacity-95 text-white font-semibold text-sm flex items-center justify-center space-x-2 shadow-lg transition-all cursor-pointer shrink-0">
+                        <span>Send</span>
+                        <i class="fa-solid fa-paper-plane text-xs"></i>
+                    </button>
+                </div>
+                <p class="text-[11px] text-purple-300/60 mt-2 flex items-center justify-between">
+                    <span>Live flight rates, hotel promos &amp; tee times are locked in directly by our Centurion team.</span>
+                    <span class="hidden sm:inline">Press Enter to send</span>
+                </p>
+            </form>
+        </section>
+
+        <!-- Right Column: Live Brief & Lead Handoff -->
+        <aside class="lg:col-span-4 theme-card rounded-2xl p-5 sm:p-6 flex flex-col justify-between space-y-5">
+            <div class="space-y-4">
+                <div class="flex items-center justify-between border-b border-purple-500/20 pb-3">
+                    <div>
+                        <h3 class="font-heading font-bold text-base sm:text-lg text-white flex items-center gap-2">
+                            <i class="fa-solid fa-suitcase-rolling text-hotpink"></i>
+                            <span>Live Trip Brief</span>
+                        </h3>
+                        <p class="text-xs text-purple-200/70">Updates as you chat</p>
+                    </div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-royal/30 text-purple-200 border border-purple-400/30">
+                        Summary
+                    </span>
+                </div>
+
+                <div class="space-y-2.5 text-xs">
+                    <div class="p-3 rounded-xl bg-[#110530]/90 border border-purple-500/20">
+                        <div class="text-[10px] uppercase tracking-wider text-skycyan font-semibold mb-0.5">Destination</div>
+                        <div id="briefDestination" class="text-sm font-semibold text-white">Thailand (Bangkok &amp; Hua Hin)</div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <div class="p-3 rounded-xl bg-[#110530]/90 border border-purple-500/20">
+                            <div class="text-[10px] uppercase tracking-wider text-skycyan font-semibold mb-0.5">Timing</div>
+                            <div id="briefTiming" class="font-semibold text-white">Flexible / Upcoming</div>
+                        </div>
+                        <div class="p-3 rounded-xl bg-[#110530]/90 border border-purple-500/20">
+                            <div class="text-[10px] uppercase tracking-wider text-skycyan font-semibold mb-0.5">Group / Golfers</div>
+                            <div id="briefGroup" class="font-semibold text-white">To be confirmed</div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 rounded-xl bg-[#110530]/90 border border-purple-500/20">
+                        <div class="text-[10px] uppercase tracking-wider text-skycyan font-semibold mb-0.5">Accommodation &amp; Budget</div>
+                        <div id="briefBudget" class="font-semibold text-white">Tailored 4★/5★ options &amp; live quote needed</div>
+                    </div>
+
+                    <div class="p-3 rounded-xl bg-[#110530]/90 border border-purple-500/20">
+                        <div class="text-[10px] uppercase tracking-wider text-hotpink font-semibold mb-1.5">Itinerary Notes</div>
+                        <ul id="briefNotes" class="space-y-1 text-purple-100/90 list-disc list-inside">
+                            <li>Custom itinerary ideas</li>
+                            <li>Direct handoff to Swannies Travels &amp; Tours</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lead Handoff Section -->
+            <div class="pt-4 border-t border-purple-500/20 space-y-2.5">
+                <div class="text-[11px] font-semibold uppercase tracking-wider text-purple-200/80 text-center">
+                    Send Brief to Our Centurion Team
+                </div>
+
+                <button id="waBtn1" type="button" class="w-full py-3 px-4 rounded-xl bg-emeraldwa hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-lg transition-all cursor-pointer">
+                    <i class="fa-brands fa-whatsapp text-base"></i>
+                    <span>WhatsApp 081 767 8205</span>
+                </button>
+
+                <button id="waBtn2" type="button" class="w-full py-3 px-4 rounded-xl bg-[#15803d] hover:bg-emerald-600 text-white font-bold text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-md transition-all cursor-pointer">
+                    <i class="fa-brands fa-whatsapp text-base"></i>
+                    <span>WhatsApp 082 335 2831</span>
+                </button>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                    <a id="emailLink1" href="mailto:swanniestravels@gmail.com" class="py-2 px-3 rounded-xl bg-hotpink hover:bg-magenta text-white font-semibold text-[11px] flex items-center justify-center space-x-1.5 transition-all truncate">
+                        <i class="fa-solid fa-envelope shrink-0"></i>
+                        <span class="truncate">swanniestravels@gmail.com</span>
+                    </a>
+                    <a id="emailLink2" href="mailto:swanniestravels2@gmail.com" class="py-2 px-3 rounded-xl bg-royal hover:bg-purple-600 text-white font-semibold text-[11px] flex items-center justify-center space-x-1.5 transition-all truncate">
+                        <i class="fa-solid fa-envelope shrink-0"></i>
+                        <span class="truncate">swanniestravels2@gmail.com</span>
+                    </a>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Modal for API Settings -->
+    <div id="apiModal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="theme-card rounded-2xl max-w-md w-full p-6 space-y-4">
+            <div class="flex items-center justify-between border-b border-purple-500/20 pb-3">
+                <h3 class="font-heading font-bold text-base text-white flex items-center gap-2">
+                    <i class="fa-solid fa-key text-hotpink"></i>
+                    <span>Gemini API Settings</span>
+                </h3>
+                <button id="closeApiModalBtn" type="button" class="text-purple-300 hover:text-white cursor-pointer">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <p class="text-xs text-purple-200/80 leading-relaxed">
+                Enter your Google AI Studio key to generate live AI travel plans. Leave blank to run in simulated demo mode.
+            </p>
+
+            <div>
+                <label for="apiKeyInput" class="block text-xs font-semibold text-purple-200 mb-1.5">Gemini API Key</label>
+                <input id="apiKeyInput" type="password" placeholder="AIzaSy..." class="w-full px-3.5 py-2.5 rounded-xl bg-[#10042e] border border-purple-400/30 focus:border-hotpink focus:outline-none text-sm text-white font-mono">
+            </div>
+
+            <div class="flex items-center justify-between pt-2">
+                <button id="clearApiKeyBtn" type="button" class="px-3 py-2 rounded-lg text-xs font-medium text-pink-300 hover:bg-white/5 cursor-pointer">
+                    Use Simulator
+                </button>
+                <button id="saveApiKeyBtn" type="button" class="px-4 py-2 rounded-xl bg-gradient-to-r from-hotpink to-magenta text-white font-bold text-xs shadow-md cursor-pointer">
+                    Save Settings
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="statusToast" class="fixed bottom-5 right-5 z-50 hidden px-4 py-3 rounded-xl bg-[#1d0b4f] border border-hotpink/50 text-white text-xs font-medium shadow-2xl flex items-center space-x-2">
+        <i class="fa-solid fa-circle-check text-emeraldwa text-sm"></i>
+        <span id="statusToastText">Updated</span>
+    </div>
+
+    <script>
+        const SWANNIES_SYSTEM_INSTRUCTION = `You are the interactive AI Travel Assistant for Swannies Travels & Tours (based in Centurion, Gauteng, South Africa).
+Help visitors brainstorm custom holidays, group packages, and golf tours (especially Thailand: Bangkok, Phuket, Hua Hin, Pattaya, Chiang Mai, plus international trips and South African getaways).
+
+Rules:
+1. Keep replies warm, upbeat, and concise (under 120 words).
+2. Ask 1 to 2 focused clarifying questions per turn (travel dates/month, budget, number of travelers/golfers, or vibe/activities).
+3. Suggest tailored destination and itinerary ideas that fit their preferences.
+4. Clearly note that live flight seats, tee times, and resort rates change daily, so exact pricing and bookings are handled directly by our team.
+5. When the user is ready for pricing, agrees on a plan, or asks to book, compile a clean bulleted summary brief and prompt them to send it via WhatsApp (081 767 8205 or 082 335 2831) or email (swanniestravels@gmail.com / swanniestravels2@gmail.com).`;
+
+        const STORAGE_KEY = 'swannies_travels_gemini_api_key';
+
+        const appState = {
+            apiKey: localStorage.getItem(STORAGE_KEY) || '',
+            history: [],
+            brief: {
+                destination: 'Thailand (Bangkok & Hua Hin)',
+                timing: 'Flexible / Upcoming',
+                group: 'To be confirmed',
+                budget: 'Tailored 4★/5★ options & live quote needed',
+                notes: [
+                    'Custom itinerary ideas',
+                    'Direct handoff to Swannies Travels & Tours'
+                ]
+            }
+        };
+
+        const chatContainer = document.getElementById('chatContainer');
+        const chatForm = document.getElementById('chatForm');
+        const chatInput = document.getElementById('chatInput');
+        const sendChatBtn = document.getElementById('sendChatBtn');
+        const typingRow = document.getElementById('typingRow');
+        const resetChatBtn = document.getElementById('resetChatBtn');
+        const modePill = document.getElementById('modePill');
+        const apiBtnLabel = document.getElementById('apiBtnLabel');
+
+        const briefDestination = document.getElementById('briefDestination');
+        const briefTiming = document.getElementById('briefTiming');
+        const briefGroup = document.getElementById('briefGroup');
+        const briefBudget = document.getElementById('briefBudget');
+        const briefNotes = document.getElementById('briefNotes');
+
+        const apiModal = document.getElementById('apiModal');
+        const openApiModalBtn = document.getElementById('openApiModalBtn');
+        const closeApiModalBtn = document.getElementById('closeApiModalBtn');
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
+        const clearApiKeyBtn = document.getElementById('clearApiKeyBtn');
+
+        function showToast(message) {
+            const toast = document.getElementById('statusToast');
+            const toastText = document.getElementById('statusToastText');
+            toastText.textContent = message;
+            toast.classList.remove('hidden');
+            clearTimeout(showToast._timer);
+            showToast._timer = setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3200);
+        }
+
+        function syncModeIndicator() {
+            if (appState.apiKey) {
+                apiBtnLabel.textContent = 'API Connected';
+                modePill.textContent = 'Gemini Live';
+                modePill.className = 'text-[10px] font-semibold px-2 py-0.5 rounded-full bg-hotpink/25 text-pink-200 border border-hotpink/50';
+            } else {
+                apiBtnLabel.textContent = 'API Settings';
+                modePill.textContent = 'Simulator Ready';
+                modePill.className = 'text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emeraldwa/20 text-emerald-300 border border-emeraldwa/40';
+            }
+        }
+
+        function renderBrief() {
+            briefDestination.textContent = appState.brief.destination;
+            briefTiming.textContent = appState.brief.timing;
+            briefGroup.textContent = appState.brief.group;
+            briefBudget.textContent = appState.brief.budget;
+            briefNotes.innerHTML = appState.brief.notes
+                .map(note => `<li>${escapeHtml(note)}</li>`)
+                .join('');
+
+            const summaryText = buildHandoffSummary();
+            document.getElementById('emailLink1').href =
+                `mailto:swanniestravels@gmail.com?subject=${encodeURIComponent('Trip Plan Inquiry - Swannies Travels & Tours')}&body=${encodeURIComponent(summaryText)}`;
+            document.getElementById('emailLink2').href =
+                `mailto:swanniestravels2@gmail.com?subject=${encodeURIComponent('Trip Plan Inquiry - Swannies Travels & Tours')}&body=${encodeURIComponent(summaryText)}`;
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function formatMessageHtml(text) {
+            const escaped = escapeHtml(text);
+            return escaped
+                .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')
+                .replace(/\n\n/g, '<br><br>')
+                .replace(/\n- /g, '<br>• ');
+        }
+
+        function appendChatBubble(role, text) {
+            const isUser = role === 'user';
+            const row = document.createElement('div');
+            row.className = `flex items-start space-x-3 max-w-2xl ${isUser ? 'ml-auto flex-row-reverse space-x-reverse' : ''}`;
+
+            const avatar = isUser
+                ? `<div class="w-8 h-8 rounded-full bg-hotpink text-white flex items-center justify-center text-xs shrink-0 mt-1"><i class="fa-solid fa-user"></i></div>`
+                : `<div class="w-8 h-8 rounded-full bg-gradient-to-br from-royal to-hotpink text-white flex items-center justify-center text-xs shrink-0 mt-1"><i class="fa-solid fa-compass"></i></div>`;
+
+            const bubbleClass = isUser
+                ? 'chat-bubble-user text-white'
+                : 'chat-bubble-bot text-purple-50';
+
+            row.innerHTML = `
+                ${avatar}
+                <div class="${bubbleClass} p-4 rounded-2xl text-sm leading-relaxed">
+                    <div>${formatMessageHtml(text)}</div>
+                </div>
+            `;
+
+            chatContainer.appendChild(row);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            appState.history.push({ role: isUser ? 'user' : 'model', text });
+        }
+
+        function updateBriefFromText(text) {
+            const lower = text.toLowerCase();
+
+            const regions = [];
+            if (lower.includes('bangkok')) regions.push('Bangkok');
+            if (lower.includes('hua hin')) regions.push('Hua Hin');
+            if (lower.includes('phuket')) regions.push('Phuket');
+            if (lower.includes('pattaya')) regions.push('Pattaya');
+            if (lower.includes('chiang mai')) regions.push('Chiang Mai');
+
+            if (regions.length > 0) {
+                appState.brief.destination = `Thailand (${regions.join(' & ')})`;
+            } else if (lower.includes('thailand')) {
+                appState.brief.destination = 'Thailand Custom Route';
+            } else if (lower.includes('honeymoon') || lower.includes('beach') || lower.includes('island')) {
+                appState.brief.destination = 'Tropical Beach & Island Escape';
+            }
+
+            const months = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+            const matchedMonth = months.find(m => lower.includes(m));
+            const dayMatch = text.match(/(\d+)\s*-?\s*day/i);
+            if (matchedMonth || dayMatch) {
+                const capMonth = matchedMonth ? matchedMonth[0].toUpperCase() + matchedMonth.slice(1) : '';
+                const daysPart = dayMatch ? `${dayMatch[1]}-Day` : '';
+                appState.brief.timing = [daysPart, capMonth].filter(Boolean).join(' ') || appState.brief.timing;
+            }
+
+            const groupMatch = text.match(/(\d+)\s*(golfers?|people|guests|friends|travellers?|travelers?|mates|pax)/i);
+            if (groupMatch) {
+                const count = groupMatch[1];
+                const label = /golf/i.test(groupMatch[2]) ? 'Golfers' : 'Travelers';
+                appState.brief.group = `${count} ${label}`;
+            }
+
+            const budgetMatch = text.match(/(?:r|zar)\s?[\d,]+(?:\s?k)?/i);
+            if (budgetMatch) {
+                appState.brief.budget = `Est. ${budgetMatch[0].toUpperCase()} (Live quote needed)`;
+            }
+
+            const notesSet = new Set(appState.brief.notes);
+            if (lower.includes('golf')) notesSet.add('Championship golf rounds & transfers');
+            if (lower.includes('honeymoon')) notesSet.add('Romantic stays & leisure experiences');
+            appState.brief.notes = Array.from(notesSet).slice(0, 4);
+
+            renderBrief();
+        }
+
+        function buildHandoffSummary() {
+            return [
+                'Hi Swannies Travels & Tours team!',
+                'Here is my trip brief from your interactive planner:',
+                `• Destination: ${appState.brief.destination}`,
+                `• Timing: ${appState.brief.timing}`,
+                `• Group / Golfers: ${appState.brief.group}`,
+                `• Accommodation / Budget: ${appState.brief.budget}`,
+                `• Notes: ${appState.brief.notes.join(', ')}`,
+                'Please assist with live availability and pricing!'
+            ].join('\n');
+        }
+
+        function openWhatsAppWithBrief(phoneDigits) {
+            const url = `https://wa.me/${phoneDigits}?text=${encodeURIComponent(buildHandoffSummary())}`;
+            window.open(url, '_blank', 'noopener,noreferrer');
+        }
+
+        async function callGeminiApi(userMessage) {
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(appState.apiKey)}`;
+            const contents = appState.history.map(item => ({
+                role: item.role,
+                parts: [{ text: item.text }]
+            }));
+
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents,
+                    systemInstruction: {
+                        parts: [{ text: SWANNIES_SYSTEM_INSTRUCTION }]
+                    },
+                    generationConfig: {
+                        temperature: 0.75,
+                        maxOutputTokens: 280
+                    }
+                })
+            });
+
+            if (!response.ok) {
+                const errJson = await response.json().catch(() => ({}));
+                throw new Error(errJson.error?.message || 'Gemini API request failed');
+            }
+
+            const data = await response.json();
+            const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (!reply) throw new Error('Empty response from Gemini');
+            return reply.trim();
+        }
+
+        async function runSimulatorReply(userMessage) {
+            await new Promise(resolve => setTimeout(resolve, 750));
+            const lower = userMessage.toLowerCase();
+
+            if (lower.includes('golf')) {
+                return `Thailand is world-class for golf! Pairing **Bangkok** or **Hua Hin** with courses like Black Mountain gives an unbelievable trip.\n\nSince tee times and hotel rates change daily, our team locks in exact live pricing for you.\n\nHow many golfers are going, and what month suits you?`;
+            }
+
+            if (lower.includes('quote') || lower.includes('book') || lower.includes('price')) {
+                return `Here is your current summary brief:\n- **Destination:** ${appState.brief.destination}\n- **Timing:** ${appState.brief.timing}\n- **Group:** ${appState.brief.group}\n\nClick **WhatsApp 081 767 8205** or **082 335 2831** below to send this directly to our Centurion team for a live quote!`;
+            }
+
+            return `Sounds fantastic! We can craft a custom itinerary around **${appState.brief.destination}** to match your ideal pace.\n\nWhat month are you planning to travel, and how many people are in your group?`;
+        }
+
+        async function handleUserPrompt(text) {
+            const trimmed = text.trim();
+            if (!trimmed) return;
+
+            chatInput.value = '';
+            chatInput.style.height = 'auto';
+            appendChatBubble('user', trimmed);
+            updateBriefFromText(trimmed);
+
+            typingRow.classList.remove('hidden');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            sendChatBtn.disabled = true;
+
+            try {
+                const reply = appState.apiKey
+                    ? await callGeminiApi(trimmed)
+                    : await runSimulatorReply(trimmed);
+
+                typingRow.classList.add('hidden');
+                appendChatBubble('model', reply);
+                updateBriefFromText(reply);
+            } catch (error) {
+                console.error(error);
+                typingRow.classList.add('hidden');
+                appendChatBubble('model', `I ran into an issue connecting to Gemini (${error.message}). You can check your API key in **API Settings** or message our Centurion team directly on WhatsApp!`);
+            } finally {
+                sendChatBtn.disabled = false;
+                chatInput.focus();
+            }
+        }
+
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            handleUserPrompt(chatInput.value);
+        });
+
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleUserPrompt(chatInput.value);
+            }
+        });
+
+        chatInput.addEventListener('input', function () {
+            this.style.height = 'auto';
+            this.style.height = `${Math.min(this.scrollHeight, 112)}px`;
+        });
+
+        document.querySelectorAll('.quick-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                handleUserPrompt(chip.textContent.trim());
+            });
+        });
+
+        resetChatBtn.addEventListener('click', () => {
+            appState.history = [];
+            appState.brief = {
+                destination: 'Thailand (Bangkok & Hua Hin)',
+                timing: 'Flexible / Upcoming',
+                group: 'To be confirmed',
+                budget: 'Tailored 4★/5★ options & live quote needed',
+                notes: [
+                    'Custom itinerary ideas',
+                    'Direct handoff to Swannies Travels & Tours'
+                ]
+            };
+            renderBrief();
+            chatContainer.innerHTML = `
+                <div class="flex items-start space-x-3 max-w-2xl">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-royal to-hotpink text-white flex items-center justify-center text-xs shrink-0 mt-1">
+                        <i class="fa-solid fa-compass"></i>
+                    </div>
+                    <div class="chat-bubble-bot p-4 rounded-2xl text-sm text-purple-50 leading-relaxed">
+                        Fresh start! What destination or getaway are we mapping out next for <strong class="text-white">Swannies Travels &amp; Tours</strong>?
+                    </div>
+                </div>
+            `;
+            showToast('Planner reset');
+        });
+
+        document.getElementById('waBtn1').addEventListener('click', () => openWhatsAppWithBrief('27817678205'));
+        document.getElementById('waBtn2').addEventListener('click', () => openWhatsAppWithBrief('27823352831'));
+
+        openApiModalBtn.addEventListener('click', () => {
+            apiKeyInput.value = appState.apiKey;
+            apiModal.classList.remove('hidden');
+        });
+
+        closeApiModalBtn.addEventListener('click', () => apiModal.classList.add('hidden'));
+
+        saveApiKeyBtn.addEventListener('click', () => {
+            const val = apiKeyInput.value.trim();
+            appState.apiKey = val;
+            if (val) {
+                localStorage.setItem(STORAGE_KEY, val);
+                showToast('Gemini API key saved');
+            } else {
+                localStorage.removeItem(STORAGE_KEY);
+                showToast('Using built-in simulator');
+            }
+            syncModeIndicator();
+            apiModal.classList.add('hidden');
+        });
+
+        clearApiKeyBtn.addEventListener('click', () => {
+            apiKeyInput.value = '';
+            appState.apiKey = '';
+            localStorage.removeItem(STORAGE_KEY);
+            syncModeIndicator();
+            apiModal.classList.add('hidden');
+            showToast('Switched to simulator');
+        });
+
+        syncModeIndicator();
+        renderBrief();
+    </script>
+</body>
+</html>
