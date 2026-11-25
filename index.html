@@ -48,6 +48,17 @@
             justify-content: center;
             transition: opacity 0.5s ease;
         }
+        @keyframes agentPulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(0, 194, 255, 0.55), 0 12px 28px rgba(255, 20, 147, 0.35);
+            }
+            50% {
+                box-shadow: 0 0 0 10px rgba(0, 194, 255, 0), 0 14px 32px rgba(255, 20, 147, 0.5);
+            }
+        }
+        .agent-cta-btn {
+            animation: agentPulse 2.4s infinite;
+        }
     </style>
 </head>
 <body class="bg-[#18143d] text-gray-100 flex flex-col justify-between min-h-screen">
@@ -76,7 +87,7 @@
 
     <!-- Header Navigation -->
     <header class="site-content bg-[#18143d]/90 backdrop-blur-md border-b border-purple-900/40 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-24 flex items-center justify-between">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-24 flex items-center justify-between gap-3">
             <a href="#" class="flex items-center gap-3.5 group cursor-pointer">
                 <img src="https://raw.githubusercontent.com/Page-One-Digital/csda-template-travel-website/f2eded1a4d6f5dd6fc657ecec4edd9ecd4d6e72e/Assets/logo3.svg" alt="Swannies Travels Logo" class="h-16 w-auto object-contain group-hover:scale-105 transition-transform">
                 <div>
@@ -85,9 +96,13 @@
                 </div>
             </a>
 
-            <div class="hidden md:flex items-center gap-6 text-xs text-gray-300 font-medium">
-                <span class="flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-cyan-300"></i> Centurion, Gauteng, SA</span>
-                <a href="https://wa.me/27817678205" target="_blank" class="hover:text-cyan-300 transition-colors flex items-center gap-1.5"><i class="fa-brands fa-whatsapp text-emerald-400"></i> 081 767 8205</a>
+            <div class="flex items-center gap-3 sm:gap-6 text-xs text-gray-300 font-medium">
+                <span class="hidden md:flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-cyan-300"></i> Centurion, Gauteng, SA</span>
+                <a href="https://wa.me/27817678205" target="_blank" class="hidden sm:flex hover:text-cyan-300 transition-colors items-center gap-1.5"><i class="fa-brands fa-whatsapp text-emerald-400"></i> 081 767 8205</a>
+                <button type="button" onclick="openTravelAgentModal()" class="bg-gradient-to-r from-[#ff1493] to-[#6a329f] hover:opacity-95 text-white font-bold px-3.5 py-2 rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-robot text-cyan-300"></i>
+                    <span>Travel Agent</span>
+                </button>
             </div>
         </div>
     </header>
@@ -111,6 +126,28 @@
             <p class="text-base sm:text-lg text-gray-300 max-w-lg mx-auto leading-relaxed">
                 Hey there, fellow world explorer! We are currently upgrading our flight paths and polishing our brand-new digital home. Unpack your curiosity—we'll be live very soon with soul-stirring group tours from South Africa!
             </p>
+
+            <!-- Guided Travel Agent Callout -->
+            <div class="p-4 sm:p-5 rounded-2xl bg-[#18143d]/90 border border-cyan-400/30 space-y-3">
+                <div class="flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider text-cyan-300">
+                    <i class="fa-solid fa-wand-magic-sparkles text-[#ff1493]"></i>
+                    <span>Don't Want to Wait? Start Planning Now</span>
+                </div>
+                <p class="text-xs sm:text-sm text-gray-300">
+                    Click below to chat with our <strong class="text-white">Swannies Travel Agent</strong>—brainstorm Thailand golf trips, holidays, or group tours and send your summary straight to our team.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1">
+                    <button type="button" onclick="openTravelAgentModal()" class="agent-cta-btn w-full sm:w-auto bg-gradient-to-r from-[#ff1493] via-pink-600 to-[#6a329f] hover:brightness-110 text-white font-extrabold px-6 py-3.5 rounded-2xl transition-all text-sm flex items-center justify-center gap-2.5 cursor-pointer">
+                        <i class="fa-solid fa-comments text-cyan-300 text-base"></i>
+                        <span>Chat with Travel Agent</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                    <a href="planner.html" class="w-full sm:w-auto bg-[#120f30] hover:bg-purple-950 text-cyan-300 font-bold px-5 py-3.5 rounded-2xl border border-cyan-400/35 transition-all text-xs sm:text-sm flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-up-right-from-square"></i>
+                        <span>Full Trip Planner</span>
+                    </a>
+                </div>
+            </div>
 
             <!-- Quick Contact Section -->
             <div class="pt-6 border-t border-purple-900/60 space-y-4">
@@ -138,6 +175,70 @@
         </div>
     </main>
 
+    <!-- Interactive Travel Agent Modal -->
+    <div id="travelAgentModal" class="fixed inset-0 z-[100] hidden bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6">
+        <div class="w-full max-w-2xl bg-[#120f30] border border-purple-500/40 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh]">
+            <div class="px-5 py-4 bg-[#18143d] border-b border-purple-900/60 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#ff1493] to-[#6a329f] flex items-center justify-center text-white">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm sm:text-base text-white">Swannies AI Travel Agent</h3>
+                        <p class="text-[11px] text-cyan-300">Brainstorm trips & send your brief to Centurion</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a href="planner.html" class="px-3 py-1.5 rounded-lg bg-purple-900/50 hover:bg-purple-800/60 text-cyan-300 text-xs font-semibold transition-colors">
+                        Full Page
+                    </a>
+                    <button type="button" onclick="closeTravelAgentModal()" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white flex items-center justify-center cursor-pointer">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="px-5 py-2.5 bg-[#141036] border-b border-purple-900/40 flex items-center gap-2 overflow-x-auto text-xs">
+                <button type="button" onclick="sendQuickAgentPrompt('10-Day Thailand Golf Trip')" class="shrink-0 px-3 py-1 rounded-full bg-purple-900/40 hover:bg-[#ff1493] text-gray-200 hover:text-white transition-colors cursor-pointer">
+                    10-Day Thailand Golf Trip
+                </button>
+                <button type="button" onclick="sendQuickAgentPrompt('Beach & Island Holiday')" class="shrink-0 px-3 py-1 rounded-full bg-purple-900/40 hover:bg-[#ff1493] text-gray-200 hover:text-white transition-colors cursor-pointer">
+                    Beach & Island Holiday
+                </button>
+                <button type="button" onclick="sendQuickAgentPrompt('Get me a quote / handoff')" class="shrink-0 px-3 py-1 rounded-full bg-purple-900/40 hover:bg-[#ff1493] text-gray-200 hover:text-white transition-colors cursor-pointer">
+                    Send Brief for Quote
+                </button>
+            </div>
+
+            <div id="modalChatLog" class="flex-1 p-5 overflow-y-auto space-y-3 text-sm">
+                <div class="bg-[#18143d] border border-purple-800/50 rounded-2xl p-4 text-gray-200 leading-relaxed">
+                    Hi there! Tell me what kind of trip you're dreaming up—like a <strong class="text-cyan-300">Thailand golf tour</strong>, coastal escape, or group getaway—along with your rough dates or group size, and I'll help shape a brief for our team.
+                </div>
+            </div>
+
+            <form id="modalAgentForm" class="p-4 bg-[#18143d] border-t border-purple-900/60 space-y-3">
+                <div class="flex gap-2">
+                    <input id="modalAgentInput" type="text" placeholder="Type your trip idea (e.g., 4 golfers to Hua Hin in November)..." class="flex-1 bg-[#120f30] text-white placeholder-gray-400 text-sm px-4 py-2.5 rounded-xl border border-purple-700/50 focus:outline-none focus:border-[#ff1493]">
+                    <button type="submit" class="bg-[#ff1493] hover:bg-pink-600 text-white font-bold px-4 py-2.5 rounded-xl text-sm flex items-center gap-1.5 cursor-pointer">
+                        <span>Ask</span>
+                        <i class="fa-solid fa-paper-plane text-xs"></i>
+                    </button>
+                </div>
+                <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                    <span class="text-gray-400">Ready for live flight & hotel rates?</span>
+                    <div class="flex items-center gap-2">
+                        <a id="modalWaLink1" href="https://wa.me/27817678205?text=Hi%20Swannies%20Travels,%20I'd%20like%20help%20planning%20a%20trip!" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+                            <i class="fa-brands fa-whatsapp"></i> WhatsApp 081 767 8205
+                        </a>
+                        <a id="modalWaLink2" href="https://wa.me/27823352831?text=Hi%20Swannies%20Travels,%20I'd%20like%20help%20planning%20a%20trip!" target="_blank" class="bg-emerald-700 hover:bg-emerald-600 text-white font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+                            <i class="fa-brands fa-whatsapp"></i> 082 335 2831
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="site-content bg-[#120f30] border-t border-purple-900/60 py-6 px-4 text-center text-xs text-gray-400">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -150,7 +251,7 @@
         </div>
     </footer>
 
-    <!-- JavaScript for Chime + ElevenLabs Audio Playback -->
+    <!-- JavaScript for Chime + ElevenLabs Audio Playback, Travel Agent Modal & Background Planes -->
     <script>
         function startAirportExperience() {
             const overlay = document.getElementById('audioOverlay');
@@ -193,6 +294,67 @@
                 console.log("Audio Context Error:", e);
             }
         }
+
+        // Travel Agent Modal Logic
+        const travelAgentModal = document.getElementById('travelAgentModal');
+        const modalChatLog = document.getElementById('modalChatLog');
+        const modalAgentForm = document.getElementById('modalAgentForm');
+        const modalAgentInput = document.getElementById('modalAgentInput');
+        let lastTripIdea = 'Custom holiday / Thailand tour inquiry';
+
+        function openTravelAgentModal() {
+            travelAgentModal.classList.remove('hidden');
+            modalAgentInput.focus();
+        }
+
+        function closeTravelAgentModal() {
+            travelAgentModal.classList.add('hidden');
+        }
+
+        function appendModalBubble(sender, text) {
+            const div = document.createElement('div');
+            if (sender === 'user') {
+                div.className = 'ml-auto max-w-[85%] bg-[#ff1493] text-white rounded-2xl px-4 py-2.5 text-sm';
+            } else {
+                div.className = 'max-w-[88%] bg-[#18143d] border border-purple-800/50 text-gray-100 rounded-2xl px-4 py-3 text-sm leading-relaxed';
+            }
+            div.textContent = text;
+            modalChatLog.appendChild(div);
+            modalChatLog.scrollTop = modalChatLog.scrollHeight;
+        }
+
+        function updateWhatsAppHandoffLinks(ideaText) {
+            lastTripIdea = ideaText;
+            const msg = `Hi Swannies Travels & Tours! I chatted with your Travel Agent about: ${lastTripIdea}. Please assist with live availability and pricing.`;
+            document.getElementById('modalWaLink1').href = `https://wa.me/27817678205?text=${encodeURIComponent(msg)}`;
+            document.getElementById('modalWaLink2').href = `https://wa.me/27823352831?text=${encodeURIComponent(msg)}`;
+        }
+
+        function sendQuickAgentPrompt(promptText) {
+            appendModalBubble('user', promptText);
+            updateWhatsAppHandoffLinks(promptText);
+
+            const lower = promptText.toLowerCase();
+            let reply = "That sounds exciting! What month are you aiming to travel, and how many people or golfers are in your group? Once you're ready, tap a WhatsApp button below to send your notes straight to our Centurion team.";
+
+            if (lower.includes('golf')) {
+                reply = "Thailand golf trips are a highlight for us—combining spots like Bangkok, Hua Hin, Pattaya, Phuket, or Chiang Mai. How many golfers are traveling and what month works best? Live tee times and flight rates are confirmed directly by our team.";
+            } else if (lower.includes('beach') || lower.includes('island')) {
+                reply = "An island or beach escape sounds great! Are you looking for a romantic couple's getaway or a relaxed group trip, and roughly how many nights do you have in mind?";
+            } else if (lower.includes('quote') || lower.includes('handoff')) {
+                reply = `I've updated your WhatsApp handoff message with "${lastTripIdea}". Click WhatsApp 081 767 8205 or 082 335 2831 below to send it right to our team for live pricing.`;
+            }
+
+            setTimeout(() => appendModalBubble('bot', reply), 350);
+        }
+
+        modalAgentForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const val = modalAgentInput.value.trim();
+            if (!val) return;
+            modalAgentInput.value = '';
+            sendQuickAgentPrompt(val);
+        });
 
         // Canvas Multi-Directional Background Planes
         const canvas = document.getElementById('flightMapCanvas');
