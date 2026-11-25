@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en" class="h-full">
 <head>
     <meta charset="UTF-8">
@@ -34,9 +34,26 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
-            background: radial-gradient(circle at 20% 15%, #24105e 0%, #140838 45%, #0c0424 100%);
+            background-color: #18143d;
             color: #ffffff;
             overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        #flightMapCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.75;
+        }
+
+        .site-content {
+            position: relative;
+            z-index: 10;
         }
 
         ::-webkit-scrollbar {
@@ -55,7 +72,7 @@
         }
 
         .theme-card {
-            background: rgba(22, 8, 59, 0.88);
+            background: rgba(18, 15, 48, 0.88);
             backdrop-filter: blur(14px);
             border: 1px solid rgba(168, 85, 247, 0.25);
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.06);
@@ -72,28 +89,6 @@
             text-shadow: 0 0 18px rgba(255, 42, 133, 0.35);
         }
 
-        @keyframes driftTrail {
-            0% {
-                transform: translate3d(-20px, 10px, 0) rotate(-6deg);
-                opacity: 0.45;
-            }
-            50% {
-                transform: translate3d(18px, -12px, 0) rotate(4deg);
-                opacity: 0.85;
-            }
-            100% {
-                transform: translate3d(-20px, 10px, 0) rotate(-6deg);
-                opacity: 0.45;
-            }
-        }
-
-        .flight-trail {
-            position: fixed;
-            pointer-events: none;
-            z-index: 0;
-            animation: driftTrail 9s ease-in-out infinite;
-        }
-
         .chat-bubble-bot {
             background: rgba(34, 15, 86, 0.9);
             border: 1px solid rgba(139, 92, 246, 0.3);
@@ -107,31 +102,20 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col font-sans antialiased selection:bg-hotpink selection:text-white relative">
+<body class="min-h-screen flex flex-col font-sans antialiased selection:bg-hotpink selection:text-white relative bg-[#18143d]">
 
-    <!-- Decorative Flight Trails -->
-    <div class="flight-trail top-28 left-8 text-skycyan hidden sm:block" style="animation-delay: 0s;">
-        <svg width="95" height="36" viewBox="0 0 95 36" fill="none">
-            <path d="M4 28C28 24 48 16 74 11" stroke="#00c2ff" stroke-width="1.5" stroke-dasharray="3 3" stroke-linecap="round"/>
-            <path d="M84 9L73 6L76 11L72 15L84 9Z" fill="#00c2ff"/>
-        </svg>
-    </div>
-    <div class="flight-trail top-1/3 right-10 text-hotpink hidden md:block" style="animation-delay: 2.5s;">
-        <svg width="105" height="40" viewBox="0 0 105 40" fill="none">
-            <path d="M6 31C32 25 56 18 84 12" stroke="#ff2a85" stroke-width="1.5" stroke-dasharray="3 3" stroke-linecap="round"/>
-            <path d="M95 10L83 7L86 12L82 16L95 10Z" fill="#ff2a85"/>
-        </svg>
-    </div>
+    <!-- Live Multi-Directional Background Airplane Canvas -->
+    <canvas id="flightMapCanvas"></canvas>
 
     <!-- Navigation Bar -->
-    <header class="relative z-20 bg-[#0e0529]/90 backdrop-blur-md border-b border-purple-500/20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-3">
+    <header class="site-content bg-[#18143d]/90 backdrop-blur-md border-b border-purple-900/40 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-3">
             <div class="flex items-center space-x-3 min-w-0">
-                <a href="index.html" class="flex items-center space-x-2 group">
-                    <img src="https://raw.githubusercontent.com/Page-One-Digital/csda-template-travel-website/f2eded1a4d6f5dd6fc657ecec4edd9ecd4d6e72e/Assets/logo3.svg" alt="Swannies Travels Logo" class="h-10 sm:h-12 w-auto object-contain">
+                <a href="index.html" class="flex items-center space-x-3 group cursor-pointer">
+                    <img src="https://raw.githubusercontent.com/Page-One-Digital/csda-template-travel-website/f2eded1a4d6f5dd6fc657ecec4edd9ecd4d6e72e/Assets/logo3.svg" alt="Swannies Travels Logo" class="h-12 w-auto object-contain group-hover:scale-105 transition-transform">
                     <div class="truncate">
                         <div class="flex items-center gap-2">
-                            <span class="font-heading font-extrabold text-sm sm:text-lg tracking-wider text-white uppercase">SWANNIES</span>
+                            <span class="font-heading font-extrabold text-sm sm:text-lg tracking-wider text-[#ff1493] uppercase">SWANNIES</span>
                             <span class="hidden sm:inline-block text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-hotpink/20 text-hotpink border border-hotpink/40">
                                 AI Planner
                             </span>
@@ -143,37 +127,32 @@
                 </a>
             </div>
 
-            <div class="flex items-center space-x-3 sm:space-x-5 text-xs">
-                <a href="index.html" class="text-purple-200 hover:text-cyan-300 font-medium transition-colors flex items-center gap-1">
+            <div class="flex items-center space-x-4 sm:space-x-6 text-xs font-medium text-gray-300">
+                <a href="index.html" class="hover:text-skycyan transition-colors flex items-center gap-1.5">
                     <i class="fa-solid fa-arrow-left text-[11px]"></i>
                     <span>Home</span>
                 </a>
 
-                <div class="hidden md:flex items-center space-x-1.5 text-purple-200/85">
+                <div class="hidden md:flex items-center space-x-1.5 text-gray-300">
                     <i class="fa-solid fa-location-dot text-skycyan"></i>
                     <span>Centurion, Gauteng, SA</span>
                 </div>
 
-                <a href="https://wa.me/27817678205" target="_blank" rel="noopener noreferrer" class="hidden sm:flex items-center space-x-1.5 text-emerald-300 hover:text-emerald-200 font-medium transition-colors">
+                <a href="https://wa.me/27817678205" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-1.5 text-emerald-400 hover:text-emerald-300 transition-colors">
                     <i class="fa-brands fa-whatsapp text-emeraldwa text-sm"></i>
                     <span>081 767 8205</span>
                 </a>
-
-                <button id="openApiModalBtn" type="button" class="px-3 py-2 rounded-lg bg-[#231059] hover:bg-[#2d1570] text-white border border-purple-400/30 hover:border-hotpink/60 font-medium flex items-center space-x-1.5 transition-all cursor-pointer">
-                    <i class="fa-solid fa-key text-hotpink"></i>
-                    <span id="apiBtnLabel">API Settings</span>
-                </button>
             </div>
         </div>
     </header>
 
     <!-- Header Banner -->
-    <section class="relative z-10 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
+    <section class="site-content max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
                 <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#1f0e52] border border-purple-400/25 text-xs text-purple-200 mb-2">
                     <span class="w-2 h-2 rounded-full bg-emeraldwa animate-pulse"></span>
-                    <span>AI-Powered Travel Discovery &amp; Instant Lead Handoff</span>
+                    <span>Guided Travel Discovery &amp; Instant Lead Handoff</span>
                 </div>
                 <h1 class="font-heading font-extrabold text-2xl sm:text-4xl text-white tracking-tight">
                     Plan Your Next <span class="script-highlight text-3xl sm:text-5xl mx-1">Dream</span> Escape
@@ -186,7 +165,7 @@
     </section>
 
     <!-- Main Workspace -->
-    <main class="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+    <main class="site-content flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
 
         <!-- Left Column: Interactive Chat Planner -->
         <section class="lg:col-span-8 theme-card glow-pink-border rounded-2xl flex flex-col min-h-[540px] lg:h-[calc(100vh-14.5rem)] overflow-hidden">
@@ -200,7 +179,7 @@
                         <div class="flex items-center space-x-2">
                             <h2 class="font-heading font-bold text-sm sm:text-base text-white">Swannies Interactive Travel Assistant</h2>
                             <span id="modePill" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emeraldwa/20 text-emerald-300 border border-emeraldwa/40">
-                                Simulator Ready
+                                Concierge Ready
                             </span>
                         </div>
                         <p class="text-[11px] text-purple-200/75">Thailand Golf • International Holidays • South African Tours</p>
@@ -341,38 +320,17 @@
         </aside>
     </main>
 
-    <!-- Modal for API Settings -->
-    <div id="apiModal" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-xs flex items-center justify-center p-4">
-        <div class="theme-card rounded-2xl max-w-md w-full p-6 space-y-4">
-            <div class="flex items-center justify-between border-b border-purple-500/20 pb-3">
-                <h3 class="font-heading font-bold text-base text-white flex items-center gap-2">
-                    <i class="fa-solid fa-key text-hotpink"></i>
-                    <span>Gemini API Settings</span>
-                </h3>
-                <button id="closeApiModalBtn" type="button" class="text-purple-300 hover:text-white cursor-pointer">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-            </div>
-
-            <p class="text-xs text-purple-200/80 leading-relaxed">
-                Enter your Google AI Studio key to generate live AI travel plans. Leave blank to run in simulated demo mode.
-            </p>
-
-            <div>
-                <label for="apiKeyInput" class="block text-xs font-semibold text-purple-200 mb-1.5">Gemini API Key</label>
-                <input id="apiKeyInput" type="password" placeholder="AQ... or AIzaSy..." class="w-full px-3.5 py-2.5 rounded-xl bg-[#10042e] border border-purple-400/30 focus:border-hotpink focus:outline-none text-sm text-white font-mono">
-            </div>
-
-            <div class="flex items-center justify-between pt-2">
-                <button id="clearApiKeyBtn" type="button" class="px-3 py-2 rounded-lg text-xs font-medium text-pink-300 hover:bg-white/5 cursor-pointer">
-                    Use Simulator
-                </button>
-                <button id="saveApiKeyBtn" type="button" class="px-4 py-2 rounded-xl bg-gradient-to-r from-hotpink to-magenta text-white font-bold text-xs shadow-md cursor-pointer">
-                    Save Settings
-                </button>
+    <!-- Footer -->
+    <footer class="site-content bg-[#120f30] border-t border-purple-900/60 py-6 px-4 text-center text-xs text-gray-400">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p>&copy; 2026 Swannies Travels & Tours. All rights reserved.</p>
+            <div class="flex gap-4 text-lg text-cyan-300">
+                <a href="#" class="hover:text-[#ff1493] transition-colors"><i class="fa-brands fa-facebook"></i></a>
+                <a href="#" class="hover:text-[#ff1493] transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://wa.me/27817678205" target="_blank" class="hover:text-[#ff1493] transition-colors"><i class="fa-brands fa-whatsapp"></i></a>
             </div>
         </div>
-    </div>
+    </footer>
 
     <!-- Toast Notification -->
     <div id="statusToast" class="fixed bottom-5 right-5 z-50 hidden px-4 py-3 rounded-xl bg-[#1d0b4f] border border-hotpink/50 text-white text-xs font-medium shadow-2xl flex items-center space-x-2">
@@ -380,21 +338,134 @@
         <span id="statusToastText">Updated</span>
     </div>
 
+    <!-- JavaScript: Interactive Logic + Multi-Directional Background Planes Canvas -->
     <script>
-        const SWANNIES_SYSTEM_INSTRUCTION = `You are the interactive AI Travel Assistant for Swannies Travels & Tours (based in Centurion, Gauteng, South Africa).
-Help visitors brainstorm custom holidays, group packages, and golf tours (especially Thailand: Bangkok, Phuket, Hua Hin, Pattaya, Chiang Mai, plus international trips and South African getaways).
+        // --- Canvas Multi-Directional Background Planes ---
+        const canvas = document.getElementById('flightMapCanvas');
+        const ctx = canvas.getContext('2d');
 
-Rules:
-1. Keep replies warm, upbeat, and concise (under 120 words).
-2. Ask 1 to 2 focused clarifying questions per turn (travel dates/month, budget, number of travelers/golfers, or vibe/activities).
-3. Suggest tailored destination and itinerary ideas that fit their preferences.
-4. Clearly note that live flight seats, tee times, and resort rates change daily, so exact pricing and bookings are handled directly by our team.
-5. When the user is ready for pricing, agrees on a plan, or asks to book, compile a clean bulleted summary brief and prompt them to send it via WhatsApp (081 767 8205 or 082 335 2831) or email (swanniestravels@gmail.com / swanniestravels2@gmail.com).`;
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
 
-        const STORAGE_KEY = 'swannies_travels_gemini_api_key';
+        let flights = [];
+        const colors = ['#00bfff', '#ff1493', '#76ff03', '#ffffff', '#a855f7'];
 
+        function initFlights() {
+            flights = [];
+            for (let i = 0; i < 15; i++) {
+                spawnFlight(true);
+            }
+        }
+
+        function spawnFlight(randomProgress = false) {
+            const margin = 100;
+            const edge = Math.floor(Math.random() * 4);
+            let startX, startY, endX, endY;
+
+            if (edge === 0) {
+                startX = Math.random() * canvas.width; startY = -margin;
+                endX = Math.random() * canvas.width; endY = canvas.height + margin;
+            } else if (edge === 1) {
+                startX = Math.random() * canvas.width; startY = canvas.height + margin;
+                endX = Math.random() * canvas.width; endY = -margin;
+            } else if (edge === 2) {
+                startX = -margin; startY = Math.random() * canvas.height;
+                endX = canvas.width + margin; endY = Math.random() * canvas.height;
+            } else {
+                startX = canvas.width + margin; startY = Math.random() * canvas.height;
+                endX = -margin; endY = Math.random() * canvas.height;
+            }
+
+            const dx = endX - startX;
+            const dy = endY - startY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const flightSpeed = 1 + Math.random() * 1.5;
+
+            flights.push({
+                x: randomProgress ? Math.random() * canvas.width : startX,
+                y: randomProgress ? Math.random() * canvas.height : startY,
+                startX: startX, startY: startY, endX: endX, endY: endY,
+                dx: dx, dy: dy, dist: dist, speed: flightSpeed,
+                angle: Math.atan2(dy, dx),
+                color: colors[Math.floor(Math.random() * colors.length)],
+                history: []
+            });
+        }
+
+        initFlights();
+
+        function animateBgFlights() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            flights.forEach(f => {
+                const vx = (f.dx / f.dist) * f.speed;
+                const vy = (f.dy / f.dist) * f.speed;
+                f.x += vx; f.y += vy;
+
+                f.history.push({ x: f.x, y: f.y });
+                if (f.history.length > 25) f.history.shift();
+
+                if (f.history.length > 1) {
+                    ctx.beginPath();
+                    ctx.moveTo(f.history[0].x, f.history[0].y);
+                    for (let i = 1; i < f.history.length; i++) {
+                        ctx.lineTo(f.history[i].x, f.history[i].y);
+                    }
+                    ctx.strokeStyle = f.color;
+                    ctx.lineWidth = 1;
+                    ctx.globalAlpha = 0.35;
+                    ctx.stroke();
+                    ctx.globalAlpha = 1.0;
+                }
+
+                ctx.save();
+                ctx.translate(f.x, f.y);
+                ctx.rotate(f.angle);
+                ctx.shadowColor = f.color;
+                ctx.shadowBlur = 12;
+                ctx.fillStyle = f.color;
+                ctx.font = "16px FontAwesome";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText("\uf072", 0, 0);
+                ctx.restore();
+
+                const margin = 150;
+                if (f.x < -margin || f.x > canvas.width + margin || f.y < -margin || f.y > canvas.height + margin) {
+                    const edge = Math.floor(Math.random() * 4);
+                    if (edge === 0) {
+                        f.startX = Math.random() * canvas.width; f.startY = -margin;
+                        f.endX = Math.random() * canvas.width; f.endY = canvas.height + margin;
+                    } else if (edge === 1) {
+                        f.startX = Math.random() * canvas.width; f.startY = canvas.height + margin;
+                        f.endX = Math.random() * canvas.width; f.endY = -margin;
+                    } else if (edge === 2) {
+                        f.startX = -margin; f.startY = Math.random() * canvas.height;
+                        f.endX = canvas.width + margin; f.endY = Math.random() * canvas.height;
+                    } else {
+                        f.startX = canvas.width + margin; f.startY = Math.random() * canvas.height;
+                        f.endX = -margin; f.endY = Math.random() * canvas.height;
+                    }
+                    f.x = f.startX; f.y = f.startY;
+                    f.dx = f.endX - f.startX; f.dy = f.endY - f.startY;
+                    f.dist = Math.sqrt(f.dx * f.dx + f.dy * f.dy);
+                    f.angle = Math.atan2(f.dy, f.dx);
+                    f.speed = 1 + Math.random() * 1.5;
+                    f.history = [];
+                }
+            });
+
+            requestAnimationFrame(animateBgFlights);
+        }
+
+        animateBgFlights();
+
+        // --- Interactive App Logic ---
         const appState = {
-            apiKey: localStorage.getItem(STORAGE_KEY) || '',
             history: [],
             brief: {
                 destination: 'Thailand (Bangkok & Hua Hin)',
@@ -414,21 +485,12 @@ Rules:
         const sendChatBtn = document.getElementById('sendChatBtn');
         const typingRow = document.getElementById('typingRow');
         const resetChatBtn = document.getElementById('resetChatBtn');
-        const modePill = document.getElementById('modePill');
-        const apiBtnLabel = document.getElementById('apiBtnLabel');
 
         const briefDestination = document.getElementById('briefDestination');
         const briefTiming = document.getElementById('briefTiming');
         const briefGroup = document.getElementById('briefGroup');
         const briefBudget = document.getElementById('briefBudget');
         const briefNotes = document.getElementById('briefNotes');
-
-        const apiModal = document.getElementById('apiModal');
-        const openApiModalBtn = document.getElementById('openApiModalBtn');
-        const closeApiModalBtn = document.getElementById('closeApiModalBtn');
-        const apiKeyInput = document.getElementById('apiKeyInput');
-        const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
-        const clearApiKeyBtn = document.getElementById('clearApiKeyBtn');
 
         function showToast(message) {
             const toast = document.getElementById('statusToast');
@@ -439,18 +501,6 @@ Rules:
             showToast._timer = setTimeout(() => {
                 toast.classList.add('hidden');
             }, 3200);
-        }
-
-        function syncModeIndicator() {
-            if (appState.apiKey) {
-                apiBtnLabel.textContent = 'API Connected';
-                modePill.textContent = 'Gemini Live';
-                modePill.className = 'text-[10px] font-semibold px-2 py-0.5 rounded-full bg-hotpink/25 text-pink-200 border border-hotpink/50';
-            } else {
-                apiBtnLabel.textContent = 'API Settings';
-                modePill.textContent = 'Simulator Ready';
-                modePill.className = 'text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emeraldwa/20 text-emerald-300 border border-emeraldwa/40';
-            }
         }
 
         function renderBrief() {
@@ -575,50 +625,19 @@ Rules:
             window.open(url, '_blank', 'noopener,noreferrer');
         }
 
-        async function callGeminiApi(userMessage) {
-            const cleanKey = appState.apiKey.trim();
-            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${encodeURIComponent(cleanKey)}`;
-            
-            const contents = appState.history.map(item => ({
-                role: item.role,
-                parts: [{ text: item.text }]
-            }));
-
-            const response = await fetch(endpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents,
-                    systemInstruction: {
-                        parts: [{ text: SWANNIES_SYSTEM_INSTRUCTION }]
-                    },
-                    generationConfig: {
-                        temperature: 0.75,
-                        maxOutputTokens: 280
-                    }
-                })
-            });
-
-            if (!response.ok) {
-                const errJson = await response.json().catch(() => ({}));
-                throw new Error(errJson.error?.message || `HTTP ${response.status} from Gemini API`);
-            }
-
-            const data = await response.json();
-            const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-            if (!reply) throw new Error('Empty response from Gemini');
-            return reply.trim();
-        }
-
-        async function runSimulatorReply(userMessage) {
-            await new Promise(resolve => setTimeout(resolve, 750));
+        async function runConciergeReply(userMessage) {
+            await new Promise(resolve => setTimeout(resolve, 650));
             const lower = userMessage.toLowerCase();
 
             if (lower.includes('golf')) {
-                return `Thailand is world-class for golf! Pairing **Bangkok** or **Hua Hin** with courses like Black Mountain gives an unbelievable trip.\n\nSince tee times and hotel rates change daily, our team locks in exact live pricing for you.\n\nHow many golfers are going, and what month suits you?`;
+                return `Thailand is world-class for golf! Pairing **Bangkok** or **Hua Hin** with courses like Black Mountain gives an unbelievable trip.\n\nSince live tee times, flights, and hotel rates change daily, our Centurion team locks in exact live pricing for you.\n\nHow many golfers are going, and what month suits you?`;
             }
 
-            if (lower.includes('quote') || lower.includes('book') || lower.includes('price')) {
+            if (lower.includes('honeymoon') || lower.includes('beach') || lower.includes('island')) {
+                return `For a beach or honeymoon escape, **Phuket** or **Hua Hin** offers great resorts, sunset dining, and smooth transfers.\n\nBecause flight seats and resort rates shift daily, our team confirms exact availability and pricing once your dates are clear.\n\nRoughly how many days are you planning, and do you prefer quiet luxury or lively spots?`;
+            }
+
+            if (lower.includes('quote') || lower.includes('book') || lower.includes('price') || lower.includes('group')) {
                 return `Here is your current summary brief:\n- **Destination:** ${appState.brief.destination}\n- **Timing:** ${appState.brief.timing}\n- **Group:** ${appState.brief.group}\n\nClick **WhatsApp 081 767 8205** or **082 335 2831** below to send this directly to our Centurion team for a live quote!`;
             }
 
@@ -639,17 +658,14 @@ Rules:
             sendChatBtn.disabled = true;
 
             try {
-                const reply = appState.apiKey
-                    ? await callGeminiApi(trimmed)
-                    : await runSimulatorReply(trimmed);
-
+                const reply = await runConciergeReply(trimmed);
                 typingRow.classList.add('hidden');
                 appendChatBubble('model', reply);
                 updateBriefFromText(reply);
             } catch (error) {
                 console.error(error);
                 typingRow.classList.add('hidden');
-                appendChatBubble('model', `I ran into an issue connecting to Gemini (${error.message}). You can check your API key in **API Settings** or message our Centurion team directly on WhatsApp!`);
+                appendChatBubble('model', 'Something hiccuped on that message—please try again or tap a WhatsApp button to reach our Centurion team directly.');
             } finally {
                 sendChatBtn.disabled = false;
                 chatInput.focus();
@@ -708,37 +724,6 @@ Rules:
         document.getElementById('waBtn1').addEventListener('click', () => openWhatsAppWithBrief('27817678205'));
         document.getElementById('waBtn2').addEventListener('click', () => openWhatsAppWithBrief('27823352831'));
 
-        openApiModalBtn.addEventListener('click', () => {
-            apiKeyInput.value = appState.apiKey;
-            apiModal.classList.remove('hidden');
-        });
-
-        closeApiModalBtn.addEventListener('click', () => apiModal.classList.add('hidden'));
-
-        saveApiKeyBtn.addEventListener('click', () => {
-            const val = apiKeyInput.value.trim();
-            appState.apiKey = val;
-            if (val) {
-                localStorage.setItem(STORAGE_KEY, val);
-                showToast('Gemini API key saved');
-            } else {
-                localStorage.removeItem(STORAGE_KEY);
-                showToast('Using built-in simulator');
-            }
-            syncModeIndicator();
-            apiModal.classList.add('hidden');
-        });
-
-        clearApiKeyBtn.addEventListener('click', () => {
-            apiKeyInput.value = '';
-            appState.apiKey = '';
-            localStorage.removeItem(STORAGE_KEY);
-            syncModeIndicator();
-            apiModal.classList.add('hidden');
-            showToast('Switched to simulator');
-        });
-
-        syncModeIndicator();
         renderBrief();
     </script>
 </body>
